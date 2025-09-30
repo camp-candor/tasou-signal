@@ -13,18 +13,24 @@ import type { AstroIntegration } from 'astro';
 
 import astrowind from './vendor/integration';
 
+import cloudflare from '@astrojs/cloudflare';
+import clerk from "@clerk/astro";
+
 import { readingTimeRemarkPlugin, responsiveTablesRehypePlugin, lazyImagesRehypePlugin } from './src/utils/frontmatter';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const hasExternalScripts = false;
 const whenExternalScripts = (items: (() => AstroIntegration) | (() => AstroIntegration)[] = []) =>
-  hasExternalScripts ? (Array.isArray(items) ? items.map((item) => item()) : [items()]) : [];
+  hasExternalScripts ? (Array.isArray(items) ? items.map((item) => item()) : [items()]) : [];  
 
 export default defineConfig({
   output: 'server',
+adapter: cloudflare(),
+  //adapter: node({ mode: "standalone" },
 
   integrations: [
+    clerk(),
     tailwind({
       applyBaseStyles: false,
     }),
