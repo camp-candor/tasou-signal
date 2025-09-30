@@ -7,7 +7,7 @@ import BlogList from '~/components/blog/List.astro';
 import Headline from '~/components/blog/Headline.astro';
 import Pagination from '~/components/blog/Pagination.astro';
 
-export const prerender = true;
+export const prerender = false;
 
 export const getStaticPaths = (async ({ paginate }) => {
   return await getStaticPathsBlogTag({ paginate });
@@ -20,7 +20,6 @@ const { page, tag } = Astro.props as Props;
 const currentPage = page.currentPage ?? 1;
 
 
-export const prerender = false;
 
 const metadata = {
   title: `Posts by tag '${tag.title}'${currentPage > 1 ? ` — Page ${currentPage} ` : ''}`,
