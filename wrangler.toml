@@ -1,9 +1,9 @@
 compatibility_flags = [ "nodejs_compat" ]
 compatibility_date = "2024-09-23"
 name = 'minimal-astro-cloudflare-clerk'
-
+pages_build_output_dir = "dist"
 [vars]
-PUBLIC_CLERK_PUBLISHABLE_KEY = "pk_test_aHVtb3JvdXMta2luZ2Zpc2gtNzUuY2xlcmsuYWNjb3VudHMuZGV2JA"
+PUBLIC_CLERK_PUBLISHABLE_KEY = "pk_test_ZXRlcm5hbC1zdW5maXNoLTIyLmNsZXJrLmFjY291bnRzLmRldiQ"
 PUBLIC_CLERK_SIGN_IN_FORCE_REDIRECT_URL= "/protected"
 PUBLIC_CLERK_SIGN_IN_URL="/sign-in"
 PUBLIC_CLERK_SIGN_UP_URL="/sign-up"
