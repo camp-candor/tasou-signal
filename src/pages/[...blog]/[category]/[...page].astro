@@ -7,12 +7,14 @@ import BlogList from '~/components/blog/List.astro';
 import Headline from '~/components/blog/Headline.astro';
 import Pagination from '~/components/blog/Pagination.astro';
 
+
+
+export const prerender = false;
+
 const { userId } = Astro.locals.auth();
 if (!userId) {
   return Astro.redirect('/sign-in');
 }
-
-export const prerender = true;
 
 export const getStaticPaths = (async ({ paginate }) => {
   return await getStaticPathsBlogCategory({ paginate });

@@ -11,12 +11,14 @@ import Pagination from '~/components/blog/Pagination.astro';
 
 import { blogListRobots, getStaticPathsBlogList } from '~/utils/blog';
 
+
+export const prerender = true;
+
 const { userId } = Astro.locals.auth();
 if (!userId) {
   return Astro.redirect('/sign-in');
 }
 
-export const prerender = true;
 
 export const getStaticPaths = (async ({ paginate }) => {
   return await getStaticPathsBlogList({ paginate });
