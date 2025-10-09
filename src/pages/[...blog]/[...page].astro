@@ -1,4 +1,6 @@
 ---
+
+
 import type { InferGetStaticPropsType, GetStaticPaths } from 'astro';
 
 import Layout from '~/layouts/PageLayout.astro';
@@ -8,6 +10,11 @@ import Pagination from '~/components/blog/Pagination.astro';
 // import PostTags from "~/components/blog/Tags.astro";
 
 import { blogListRobots, getStaticPathsBlogList } from '~/utils/blog';
+
+const { userId } = Astro.locals.auth();
+if (!userId) {
+  return Astro.redirect('/sign-in');
+}
 
 export const prerender = true;
 

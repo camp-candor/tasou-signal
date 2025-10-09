@@ -3,3 +3,15 @@
 /// <reference types="astro/client" />
 /// <reference types="vite/client" />
 /// <reference types="../vendor/integration/types.d.ts" />
+
+
+declare namespace App {
+  interface Locals {
+    user: {
+      name: string;
+      // other user properties
+    } | null;
+    // or if `auth` is a function:
+    auth: () => { userId: string | null };
+  }
+}
