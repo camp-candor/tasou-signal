@@ -12,10 +12,10 @@ import { headerData } from '~/navigation';
 import FAQs from '~/components/widgets/FAQs.astro';
 import BlogLatestPosts from '~/components/widgets/BlogLatestPosts.astro';
 
-const { userId } = Astro.locals.auth();
-if (!userId) {
-  return Astro.redirect('/sign-in');
-}
+//const { userId } = Astro.locals.auth();
+//if (!userId) {
+//  return Astro.redirect('/sign-in');
+//}
 
 const metadata = {
   title: 'SaaS Landing Page',

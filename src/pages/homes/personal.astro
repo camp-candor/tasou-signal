@@ -11,10 +11,10 @@ import Steps from '~/components/widgets/Steps.astro';
 import BlogLatestPosts from '~/components/widgets/BlogLatestPosts.astro';
 import { getPermalink } from '~/utils/permalinks';
 
-const { userId } = Astro.locals.auth();
-if (!userId) {
-  return Astro.redirect('/sign-in');
-}
+//const { userId } = Astro.locals.auth();
+//if (!userId) {
+//  return Astro.redirect('/sign-in');
+//}
 
 const metadata = {
   title: 'Personal Homepage Demo',

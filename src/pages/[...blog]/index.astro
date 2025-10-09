@@ -16,10 +16,10 @@ import RelatedPosts from '~/components/blog/RelatedPosts.astro';
 
 export const prerender = false;
 
-const { userId } = Astro.locals.auth();
-if (!userId) {
-  return Astro.redirect('/sign-in');
-}
+//const { userId } = Astro.locals.auth();
+//if (!userId) {
+//  return Astro.redirect('/sign-in');
+//}
 
 
 export const getStaticPaths = (async () => {

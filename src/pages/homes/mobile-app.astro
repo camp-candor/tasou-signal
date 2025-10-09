@@ -14,10 +14,10 @@ import Stats from '~/components/widgets/Stats.astro';
 import Button from '~/components/ui/Button.astro';
 import Image from '~/components/common/Image.astro';
 
-const { userId } = Astro.locals.auth();
-if (!userId) {
-  return Astro.redirect('/sign-in');
-}
+//const { userId } = Astro.locals.auth();
+//if (!userId) {
+//  return Astro.redirect('/sign-in');
+//}
 
 const appStoreImg = '~/assets/images/app-store.png';
 const appStoreDownloadLink = 'https://github.com/onwidget/astrowind';
