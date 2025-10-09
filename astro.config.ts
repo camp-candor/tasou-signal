@@ -12,6 +12,7 @@ import compress from 'astro-compress';
 import type { AstroIntegration } from 'astro';
 
 import astrowind from './vendor/integration';
+import clerk from '@clerk/astro'
 
 import { readingTimeRemarkPlugin, responsiveTablesRehypePlugin, lazyImagesRehypePlugin } from './src/utils/frontmatter';
 
@@ -27,6 +28,10 @@ export default defineConfig({
    output: 'server',
 
   integrations: [
+    
+     
+    clerk(),
+
     tailwind({
       applyBaseStyles: false,
     }),
