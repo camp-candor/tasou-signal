@@ -1,5 +1,19 @@
+
 ---
-import { SignIn } from '@clerk/astro/components'
+import { SignIn as ClerkSignIn } from "@clerk/astro/react";
 ---
 
-<SignIn />
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="generator" content={Astro.generator} />
+    <title>Astro</title>
+  </head>
+  <body>
+    <ClerkSignIn client:load />
+  </body>
+</html>
+
+

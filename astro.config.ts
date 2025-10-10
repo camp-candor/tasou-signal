@@ -13,6 +13,7 @@ import type { AstroIntegration } from 'astro';
 
 import astrowind from './vendor/integration';
 import clerk from '@clerk/astro'
+import react from '@astrojs/react';
 
 import { readingTimeRemarkPlugin, responsiveTablesRehypePlugin, lazyImagesRehypePlugin } from './src/utils/frontmatter';
 
@@ -29,7 +30,8 @@ export default defineConfig({
 
   integrations: [
     
-     
+    
+     react(),
     clerk(),
 
     tailwind({
