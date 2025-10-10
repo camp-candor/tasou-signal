@@ -1,6 +1,6 @@
 
 ---
-import { SignIn as ClerkSignIn } from "@clerk/astro/react";
+import { SignIn } from '@clerk/astro/components'
 ---
 
 <html lang="en">
@@ -12,7 +12,7 @@ import { SignIn as ClerkSignIn } from "@clerk/astro/react";
     <title>Astro</title>
   </head>
   <body>
-    <ClerkSignIn client:load />
+    <SignIn client:load />
   </body>
 </html>
 
