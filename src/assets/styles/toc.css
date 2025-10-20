@@ -1,0 +1,33 @@
+/* src/assets/styles/toc.css */
+.toc-container {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  grid-template-rows: auto auto;
+  gap: 1rem;
+  padding: 1rem;
+  background-color: #f0f0f0;
+}
+
+.toc-main {
+  grid-column: 1 / 2;
+  grid-row: 1 / 3;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  padding: 1rem;
+}
+
+.toc-secondary {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  padding: 1rem;
+}
+
+.toc-container a {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+
+.toc-container h2 {
+  margin-top: 0;
+}
