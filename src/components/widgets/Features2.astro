@@ -25,17 +25,17 @@ const {
 
 const wrapperClasses = {
   container: 'max-w-7xl mx-auto px-4 sm:px-6 lg:px-8',
-  ...((classes?.wrapper as {}) ?? {}),
+  ...((classes?.wrapper as unknown as object) ?? {}),
 };
 
 const headlineClasses = {
   container: 'max-w-3xl mx-auto text-center',
-  ...((classes?.headline as {}) ?? {}),
+  ...((classes?.headline as unknown as object) ?? {}),
 };
 
 const contentClasses = {
   container: `grid md:grid-cols-${columns} gap-8 md:gap-12`,
-  ...((classes?.content as {}) ?? {}),
+  ...((classes?.content as unknown as object) ?? {}),
 };
 
 const itemClasses = {
@@ -43,7 +43,7 @@ const itemClasses = {
   icon: 'flex justify-center md:justify-start rtl:md:justify-end mb-2',
   title: 'text-xl font-bold',
   description: 'text-muted dark:text-slate-400',
-  ...((classes?.item as {}) ?? {}),
+  ...((classes?.item as unknown as object) ?? {}),
 };
 ---
 

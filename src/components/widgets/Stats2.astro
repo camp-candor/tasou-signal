@@ -8,13 +8,7 @@ export interface Props extends Widget {
   stats?: Array<Stat>;
 }
 
-const {
-  headline,
-  stats = [],
-  id,
-  isDark = false,
-  bg = await Astro.slots.render('bg'),
-} = Astro.props;
+const { headline, stats = [], id, isDark = false, bg = await Astro.slots.render('bg') } = Astro.props;
 ---
 
 <WidgetWrapper id={id} isDark={isDark} containerClass="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" bg={bg}>

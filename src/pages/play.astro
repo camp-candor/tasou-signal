@@ -6,25 +6,23 @@ import Layout from '../layouts/Layout.astro';
 // Ensure the user is logged in before rendering this page.
 //const { getToken } = await getAuth(Astro.request);
 
- const { userId, sessionId, orgId, getToken } = Astro.locals.auth();
+const { userId, sessionId, orgId, getToken } = Astro.locals.auth();
 
 // Generate a short-lived session token to pass to the iframe.
 // We are passing the JWT template name `game_backend` to get a custom token.
 // This is a best practice for security. You can configure this template in your Clerk dashboard.
 const token = await getToken();
 
-
 const gameUrl = 'https://rpg.mythos.tattoo/'; // The URL of the game in the iframe
 ---
 
 <Layout>
   <main>
-    
     <h1>Game Portal</h1>
-    
-    <h3>{{userId}}</h3>
-    <h3>{{sessionId}}</h3>
-    <h3>{{orgId}}</h3>
+
+    <h3>{{ userId }}</h3>
+    <h3>{{ sessionId }}</h3>
+    <h3>{{ orgId }}</h3>
 
     <p>Loading your game...</p>
 
@@ -38,12 +36,12 @@ const gameUrl = 'https://rpg.mythos.tattoo/'; // The URL of the game in the ifra
 
       // Wait for the iframe to load before trying to send the message.
       iframe.addEventListener('load', () => {
-        console.log("Parent: Iframe loaded. Sending session token...");
+        console.log('Parent: Iframe loaded. Sending session token...');
         // Send the token to the iframe's window.
         iframe.contentWindow.postMessage(
           {
             type: 'clerk-auth-token',
-            token: sessionToken
+            token: sessionToken,
           },
           targetOrigin // IMPORTANT: Specify the target origin for security.
         );
@@ -51,5 +49,3 @@ const gameUrl = 'https://rpg.mythos.tattoo/'; // The URL of the game in the ifra
     </script>
   </main>
 </Layout>
-
-
