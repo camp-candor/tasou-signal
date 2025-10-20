@@ -1,11 +1,12 @@
 ---
 import Layout from '~/layouts/PageLayout.astro';
 import HomeButtons from '~/components/HomeButtons.astro';
+import TableOfContents from '~/components/TableOfContents.astro';
+import '~/assets/styles/toc.css';
 
 import { getCollection } from 'astro:content';
 
 const posts = await getCollection('post');
-
 
 //const { userId } = Astro.locals.auth();
 //if (!userId) {
@@ -19,13 +20,17 @@ const metadata = {
 
 <Layout metadata={metadata}>
   <HomeButtons />
+  <TableOfContents />
   <div class="blog-posts">
-  {posts.map((post) => (
-    <article>
-      <h2><a href={`/blog/${post.slug}`}>{post.data.title}</a></h2>
-      {post.data.excerpt && <p>{post.data.excerpt}</p>}
-    </article>
-  ))}
-</div>
-
+    {
+      posts.map((post) => (
+        <article>
+          <h2>
+            <a href={`/blog/${post.slug}`}>{post.data.title}</a>
+          </h2>
+          {post.data.excerpt && <p>{post.data.excerpt}</p>}
+        </article>
+      ))
+    }
+  </div>
 </Layout>
