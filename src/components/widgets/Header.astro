@@ -46,7 +46,30 @@ const {
 
 const currentPath = `/${trimSlash(new URL(Astro.url).pathname)}`;
 ---
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const dropdowns = document.querySelectorAll('.dropdown');
 
+    dropdowns.forEach((dropdown) => {
+      const button = dropdown.querySelector('button');
+
+      if (button) {
+        button.addEventListener('click', (event) => {
+          event.stopPropagation();
+          dropdown.classList.toggle('is-active');
+        });
+      }
+    });
+
+    document.addEventListener('click', (event) => {
+      dropdowns.forEach((dropdown) => {
+        if (!dropdown.contains(event.target as Node)) {
+          dropdown.classList.remove('is-active');
+        }
+      });
+    });
+  });
+</script>
 <header
   class:list={[
     { sticky: isSticky, relative: !isSticky, dark: isDark },
