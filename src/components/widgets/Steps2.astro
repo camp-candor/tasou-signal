@@ -1,72 +1,75 @@
 ---
 import { Icon } from 'astro-icon/components';
-import WidgetWrapper from '~/components/ui/WidgetWrapper.astro';
 import Headline from '~/components/ui/Headline.astro';
-import Button from '~/components/ui/Button.astro';
-import type { Steps as Props } from '~/types';
+import WidgetWrapper from '~/components/ui/WidgetWrapper.astro';
+import Image from '~/components/common/Image.astro';
+import type { Headline as HeadlineProps, Item, Image as ImageType, Widget } from '~/types';
+
+export interface Props extends Widget {
+  headline?: HeadlineProps;
+  items?: Array<Item>;
+  image?: string | ImageType;
+}
 
 const {
-  title = await Astro.slots.render('title'),
-  subtitle = await Astro.slots.render('subtitle'),
-  tagline,
-  callToAction = await Astro.slots.render('callToAction'),
+  headline,
   items = [],
-  isReversed = false,
-
+  image = await Astro.slots.render('image'),
   id,
   isDark = false,
-  classes = {},
   bg = await Astro.slots.render('bg'),
 } = Astro.props;
 ---
 
-<WidgetWrapper id={id} isDark={isDark} containerClass={`max-w-6xl mx-auto ${classes?.container ?? ''}`} bg={bg}>
-  <div class={`flex flex-col gap-8 md:gap-12 md:flex-row ${isReversed ? 'md:flex-row-reverse' : ''}`}>
-    <div class={`w-full lg:w-1/2 gap-8 md:gap-12 ${isReversed ? 'lg:ml-16 md:ml-8 ml-0' : 'lg:mr-16 md:mr-8 mr-0'}`}>
-      <Headline
-        title={title}
-        subtitle={subtitle}
-        tagline={tagline}
-        classes={{
-          container: 'text-center md:text-left rtl:md:text-right mb-4 md:mb-8',
-          title: 'mb-4 text-3xl lg:text-4xl font-bold font-heading',
-          subtitle: 'mb-8 text-xl text-muted dark:text-slate-400',
-          // ...((classes?.headline as {}) ?? {}),
-        }}
-      />
-
-      <div class="w-full text-center md:text-left rtl:md:text-right">
+<WidgetWrapper id={id} isDark={isDark} containerClass="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8" bg={bg}>
+  <div class="relative">
+    <div class="flex items-center justify-between">
+      <div class="max-w-3xl">
+        <Headline {...headline} />
+      </div>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16">
+      <div class="md:self-center">
         {
-          typeof callToAction === 'string' ? (
-            <Fragment set:html={callToAction} />
-          ) : (
-            callToAction &&
-            callToAction.text &&
-            callToAction.href && <Button variant="primary" {...callToAction} class="mb-12 w-auto" />
+          items.map(({ title, description, icon }, index) => (
+            <div class="flex">
+              <div class="flex flex-col items-center mr-4 rtl:mr-0 rtl:ml-4">
+                <div
+                  class:list={[
+                    'flex items-center justify-center w-10 h-10 rounded-full border-2',
+                    {
+                      'border-primary dark:border-blue-600': index !== 0,
+                      'bg-primary dark:bg-blue-600 text-white': index === 0,
+                    },
+                  ]}
+                >
+                  <Icon name={icon} class="w-6 h-6" />
+                </div>
+                {index < items.length - 1 && <div class="w-px h-full bg-gray-300 dark:bg-slate-500" />}
+              </div>
+              <div class="pt-1 pb-8">
+                <p class="mb-2 text-xl font-bold">{title}</p>
+                <p class="text-muted dark:text-slate-400" set:html={description} />
+              </div>
+            </div>
+          ))
+        }
+      </div>
+      <div aria-hidden="true" class="mt-10 md:mt-0">
+        {
+          image && (
+            <div class="relative mx-auto max-w-4xl">
+              <Image
+                class="rounded-lg shadow-lg bg-gray-400 dark:bg-slate-700"
+                width={500}
+                height={500}
+                src={typeof image === 'string' ? image : image.src}
+                alt={typeof image === 'object' && image.alt ? image.alt : ''}
+              />
+            </div>
           )
         }
       </div>
-    </div>
-    <div class="w-full lg:w-1/2 px-0">
-      <ul class="space-y-10">
-        {
-          items && items.length
-            ? items.map(({ title: title2, description, icon }, index) => (
-                <li class="flex md:-mx-4">
-                  <div class="pr-4 sm:pl-4 rtl:pr-0 rtl:pl-4 rtl:sm:pl-0 rtl:sm:pr-4">
-                    <span class="flex w-16 h-16 mx-auto items-center justify-center text-2xl font-bold rounded-full bg-blue-100 text-primary">
-                      {icon ? <Icon name={icon} class="w-6 h-6 icon-bold" /> : index + 1}
-                    </span>
-                  </div>
-                  <div class="pl-4 rtl:pl-0 rtl:pr-4">
-                    <h3 class="mb-4 text-xl font-semibold font-heading" set:html={title2} />
-                    <p class="text-muted dark:text-gray-400" set:html={description} />
-                  </div>
-                </li>
-              ))
-            : ''
-        }
-      </ul>
     </div>
   </div>
 </WidgetWrapper>
