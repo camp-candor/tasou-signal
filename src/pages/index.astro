@@ -1,5 +1,6 @@
 ---
 import Layout from '~/layouts/PageLayout.astro';
+import HomeButtons from '~/components/HomeButtons.astro';
 
 import { getCollection } from 'astro:content';
 
@@ -17,7 +18,7 @@ const metadata = {
 ---
 
 <Layout metadata={metadata}>
-  
+  <HomeButtons />
   <div class="blog-posts">
   {posts.map((post) => (
     <article>
