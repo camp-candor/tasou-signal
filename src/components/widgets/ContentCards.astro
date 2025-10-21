@@ -36,18 +36,25 @@ import realmsImage from '~/assets/images/forgotten-realms.jpg';
     padding: 20px;
   }
   .card {
-    background-color: #f9f9f9;
+    background-color: black;
+    color: white;
     border-radius: 8px;
     overflow: hidden;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    width: 300px;
+    width: 450px;
+    display: flex;
+    flex-direction: column;
   }
   .card img {
     width: 100%;
-    height: auto;
+    height: 200px;
+    object-fit: cover;
   }
   .card-content {
     padding: 20px;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
   }
   .card-content h2 {
     font-size: 1.2rem;
@@ -63,9 +70,10 @@ import realmsImage from '~/assets/images/forgotten-realms.jpg';
     text-overflow: ellipsis;
   }
   .read-more {
-    color: #007bff;
+    color: white;
     text-decoration: none;
     font-weight: bold;
+    margin-top: auto;
   }
   .read-more::after {
     content: ' >';
