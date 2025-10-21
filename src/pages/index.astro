@@ -3,6 +3,7 @@ import Layout from '~/layouts/PageLayout.astro';
 import HomeButtons from '~/components/HomeButtons.astro';
 import TableOfContents from '~/components/TableOfContents.astro';
 import CircleMagic from '~/components/widgets/CircleMagic.astro';
+import ContentCards from '~/components/widgets/ContentCards.astro';
 import '~/assets/styles/toc.css';
 
 import { getCollection } from 'astro:content';
@@ -35,4 +36,5 @@ const metadata = {
     }
   </div>
   <CircleMagic />
+  <ContentCards />
 </Layout>
