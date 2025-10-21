@@ -4,11 +4,12 @@ import HomeButtons from '~/components/HomeButtons.astro';
 import TableOfContents from '~/components/TableOfContents.astro';
 import CircleMagic from '~/components/widgets/CircleMagic.astro';
 import ContentCards from '~/components/widgets/ContentCards.astro';
+import DndBlog from '~/components/widgets/DndBlog.astro';
 import '~/assets/styles/toc.css';
 
-import { getCollection } from 'astro:content';
+//import { getCollection } from 'astro:content';
 
-const posts = await getCollection('post');
+//const posts = await getCollection('post');
 
 //const { userId } = Astro.locals.auth();
 //if (!userId) {
@@ -25,4 +26,5 @@ const metadata = {
   <TableOfContents />
   <CircleMagic />
   <ContentCards />
+  <DndBlog />
 </Layout>
