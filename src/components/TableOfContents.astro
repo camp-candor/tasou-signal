@@ -2,29 +2,67 @@
 
 ---
 
-<div class="toc-container">
-
-  <a href="/terms" class="toc-card toc-hellfire" style="background-image: url('/hellfire-club.png');">
-    <div class="toc-overlay"></div>
-    <div class="toc-content">
-      <div class="toc-logo">Dungeons & Dragons | Stranger Things</div>
-      <h2>WELCOME to the<br />HELLFIRE CLUB</h2>
-      <div class="toc-button">AVAILABLE NOW</div>
-    </div>
-  </a>
-  <a href="/terms" class="toc-card toc-forgotten-realms" style="background-image: url('/forgotten-realms.png');">
-    <div class="toc-overlay"></div>
-    <div class="toc-content">
-      <span class="toc-tag">BUNDLE AND SAVE</span>
-      <h3>Create your Forgotten Realms legend with the Ultimate Bundle</h3>
-    </div>
-  </a>
-  <a href="/terms" class="toc-card toc-starter-set" style="background-image: url('/starter-set.png');">
-    <div class="toc-overlay"></div>
-    <div class="toc-content">
-      <span class="toc-tag">EXPLORE</span>
-      <h3>Say yes to adventure with the new D&D Starter Set</h3>
-    </div>
-  </a>
-
+<div class="toc-wrapper">
+  <div class="toc-text">
+    <h2>PLAYER'S HANDBOOK</h2>
+    <p>
+      The essential reference for every Dungeons & Dragons roleplayer. It contains rules for character creation and
+      advancement, backgrounds and skills, exploration and combat, equipment, spells, and much more.
+    </p>
+    <a href="/terms" class="toc-read-more">READ MORE</a>
+  </div>
+  <div class="toc-video">
+    <img src="/dnd-video.png" alt="D&D Player's Handbook promotional video" />
+  </div>
 </div>
+
+<style>
+  .toc-wrapper {
+    display: flex;
+    align-items: center;
+    background-color: #1a1a1a;
+    color: white;
+    padding: 2rem;
+    border-radius: 8px;
+    max-width: 1200px;
+    margin: 2rem auto;
+    font-family: sans-serif;
+  }
+  .toc-text {
+    flex: 1;
+    padding-right: 2rem;
+  }
+  .toc-text h2 {
+    font-family: 'Georgia', serif;
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #f0e6d2;
+    text-transform: uppercase;
+    margin-top: 0;
+    margin-bottom: 1rem;
+    line-height: 1.2;
+  }
+  .toc-text p {
+    font-size: 1rem;
+    line-height: 1.6;
+    margin-bottom: 2rem;
+  }
+  .toc-read-more {
+    background-color: #c00;
+    color: white;
+    padding: 12px 24px;
+    text-decoration: none;
+    font-weight: bold;
+    border-radius: 4px;
+    text-transform: uppercase;
+    display: inline-block;
+  }
+  .toc-video {
+    flex: 1;
+  }
+  .toc-video img {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+  }
+</style>
