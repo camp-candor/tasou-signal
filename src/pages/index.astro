@@ -23,18 +23,6 @@ const metadata = {
 <Layout metadata={metadata}>
   <HomeButtons />
   <TableOfContents />
-  <div class="blog-posts">
-    {
-      posts.map((post) => (
-        <article>
-          <h2>
-            <a href={`/blog/${post.slug}`}>{post.data.title}</a>
-          </h2>
-          {post.data.excerpt && <p>{post.data.excerpt}</p>}
-        </article>
-      ))
-    }
-  </div>
   <CircleMagic />
   <ContentCards />
 </Layout>
