@@ -13,5 +13,19 @@
       <slot />
       <!-- This is where page content will go -->
     </main>
+
+    <svg style="position:absolute; width:0; height:0;">
+      <filter id="magnify-distortion">
+        <feDisplacementMap in="SourceGraphic" in2="noise" scale="10" xChannelSelector="R" yChannelSelector="G" />
+        <feGaussianBlur in="SourceGraphic" stdDeviation="1" />
+      </filter>
+    </svg>
+
+    <script>
+      document.addEventListener('mousemove', (e) => {
+        document.documentElement.style.setProperty('--mouse-x', `${e.clientX}px`);
+        document.documentElement.style.setProperty('--mouse-y', `${e.clientY}px`);
+      });
+    </script>
   </body>
 </html>
