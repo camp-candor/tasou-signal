@@ -70,6 +70,60 @@ import '~/assets/styles/almanac-separators.css';
       <CensusPlaceholder />
     </div>
   </section>
+
+  <!-- Rusted Nameplate Separator for Whispers -->
+  <div class="rusted-nameplate">
+    <div class="plate-text">Whispers & Warnings</div>
+  </div>
+
+  <section id="whispers" class="scroll-section">
+    <div class="specimen-board">
+      <!-- Omen Moth 1: Unverified -->
+      <div class="omen-moth" data-status="unverified">
+        <img src="/moths/swamp-luna.png" alt="A large, pale green swamp luna moth." class="moth-image" />
+        <div class="moth-pin"></div>
+        <div class="rumor-text">
+          <h4>Whisper #73</h4>
+          <p>They say the old bell at the sunken chapel tolls on moonless nights, but no one's there to ring it.</p>
+        </div>
+      </div>
+
+      <!-- Omen Moth 2: Verified -->
+      <div class="omen-moth" data-status="verified">
+        <img
+          src="/moths/deaths-head.png"
+          alt="A deaths-head hawk moth, its markings resembling a skull."
+          class="moth-image"
+        />
+        <div class="moth-pin"></div>
+        <div class="rumor-text">
+          <h4>Warning #42 - Verified</h4>
+          <p>
+            The bridge near Miller's Crossing is out. Washed away by the last flood. Don't try to cross there after
+            dark.
+          </p>
+        </div>
+      </div>
+
+      <!-- Omen Moth 3: False -->
+      <div class="omen-moth" data-status="false">
+        <img
+          src="/moths/tattered-emperor.png"
+          alt="A tattered emperor moth, its wings torn and faded."
+          class="moth-image"
+        />
+        <div class="moth-pin"></div>
+        <div class="rumor-text">
+          <h4>Tale #19 - False</h4>
+          <p>
+            Old Man Hemlock's treasure was a lie. We dug where the letter said. Found nothing but brackish water and
+            bones.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <footer class="almanac-footer">
     <!-- ... final CTA ... -->
   </footer>
@@ -100,6 +154,35 @@ import '~/assets/styles/almanac-separators.css';
       inkBlot.style.setProperty('--mouse-y', `${clientY - top}px`);
     });
   }
+
+  // Omen Moth interactivity
+  document.addEventListener('DOMContentLoaded', () => {
+    const moths = document.querySelectorAll('.omen-moth');
+
+    moths.forEach((moth) => {
+      moth.addEventListener('click', (event) => {
+        event.stopPropagation(); // Prevent click from bubbling up to the document
+        const wasActive = moth.classList.contains('is-active');
+
+        // Deactivate all moths
+        moths.forEach((otherMoth) => {
+          otherMoth.classList.remove('is-active');
+        });
+
+        // Activate the clicked moth if it wasn't already active
+        if (!wasActive) {
+          moth.classList.add('is-active');
+        }
+      });
+    });
+
+    // Click outside to close any active moth
+    document.addEventListener('click', () => {
+      moths.forEach((moth) => {
+        moth.classList.remove('is-active');
+      });
+    });
+  });
 </script>
 
 <style>
