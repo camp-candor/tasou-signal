@@ -4,6 +4,7 @@ import AlmanacLayout from '../layouts/AlmanacLayout.astro';
 import SurveyPlaceholder from '../components/widgets/SurveyPlaceholder.astro';
 import TestamentPlaceholder from '../components/widgets/TestamentPlaceholder.astro';
 import CensusPlaceholder from '../components/widgets/CensusPlaceholder.astro';
+import '~/assets/styles/almanac-separators.css';
 ---
 
 <AlmanacLayout>
@@ -14,9 +15,21 @@ import CensusPlaceholder from '../components/widgets/CensusPlaceholder.astro';
   <nav class="almanac-nav">
     <!-- ... nav links ... -->
   </nav>
+
+  <!-- Surveyor's Tools Separator -->
+  <div class="surveyors-tools distort">
+    <div class="candle-light-overlay"></div>
+  </div>
+
   <section id="survey" class="scroll-section">
     <SurveyPlaceholder />
   </section>
+
+  <!-- Ink Blot & Epigraph Separator -->
+  <div class="ink-blot-epigraph">
+    <p class="epigraph-text">...and so the Parish keeps its own accounts.</p>
+  </div>
+
   <section id="testaments" class="scroll-section">
     <div class="testaments-grid">
       <TestamentPlaceholder />
@@ -26,7 +39,16 @@ import CensusPlaceholder from '../components/widgets/CensusPlaceholder.astro';
       <TestamentPlaceholder />
     </div>
   </section>
+
+  <!-- Stitched Seam Separator -->
+  <div class="stitched-seam"></div>
+
   <section id="census" class="scroll-section">
+    <!-- Rusted Nameplate Separator -->
+    <div class="rusted-nameplate">
+      <div class="plate-text">The Census</div>
+    </div>
+
     <div class="census-grid">
       <CensusPlaceholder />
       <CensusPlaceholder />
@@ -42,6 +64,7 @@ import CensusPlaceholder from '../components/widgets/CensusPlaceholder.astro';
 </AlmanacLayout>
 
 <script>
+  // Intersection Observer for scroll animations
   const observer = new IntersectionObserver(
     (entries) => {
       entries.forEach((entry) => {
@@ -54,6 +77,17 @@ import CensusPlaceholder from '../components/widgets/CensusPlaceholder.astro';
   );
 
   document.querySelectorAll('.scroll-section').forEach((el) => observer.observe(el));
+
+  // Mouse tracking for Ink Blot effect
+  const inkBlot = document.querySelector('.ink-blot-epigraph') as HTMLElement;
+  if (inkBlot) {
+    document.addEventListener('mousemove', (e) => {
+      const { clientX, clientY } = e;
+      const { left, top } = inkBlot.getBoundingClientRect();
+      inkBlot.style.setProperty('--mouse-x', `${clientX - left}px`);
+      inkBlot.style.setProperty('--mouse-y', `${clientY - top}px`);
+    });
+  }
 </script>
 
 <style>
