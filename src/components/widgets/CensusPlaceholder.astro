@@ -1,0 +1,41 @@
+---
+// src/components/widgets/CensusPlaceholder.astro
+---
+
+<div class="census-placeholder-card">
+  <div class="portrait-block"></div>
+  <div class="name-block"></div>
+  <div class="status-block"></div>
+</div>
+
+<style>
+  .census-placeholder-card {
+    background: var(--paper-bg);
+    padding: 1.5rem;
+    box-shadow: 2px 2px 15px rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .portrait-block {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    background: url('/assets/images/placeholders/smudged-portrait.png') no-repeat center center;
+    background-size: cover;
+  }
+
+  .name-block {
+    width: 80%;
+    height: 1.5rem;
+    background-color: rgba(0, 0, 0, 0.2);
+  }
+
+  .status-block {
+    width: 60%;
+    height: 1rem;
+    background-color: rgba(0, 0, 0, 0.1);
+  }
+</style>

@@ -1,6 +1,9 @@
 ---
 // src/pages/index-almanac.astro
 import AlmanacLayout from '../layouts/AlmanacLayout.astro';
+import SurveyPlaceholder from '../components/widgets/SurveyPlaceholder.astro';
+import TestamentPlaceholder from '../components/widgets/TestamentPlaceholder.astro';
+import CensusPlaceholder from '../components/widgets/CensusPlaceholder.astro';
 ---
 
 <AlmanacLayout>
@@ -12,16 +15,25 @@ import AlmanacLayout from '../layouts/AlmanacLayout.astro';
     <!-- ... nav links ... -->
   </nav>
   <section id="survey" class="scroll-section">
-    <!-- Survey/Map component will go here -->
+    <SurveyPlaceholder />
   </section>
   <section id="testaments" class="scroll-section">
     <div class="testaments-grid">
-      <!-- Asymmetrical grid of testament cards will go here -->
+      <TestamentPlaceholder />
+      <TestamentPlaceholder />
+      <TestamentPlaceholder />
+      <TestamentPlaceholder />
+      <TestamentPlaceholder />
     </div>
   </section>
   <section id="census" class="scroll-section">
     <div class="census-grid">
-      <!-- Grid of charcoal portrait components will go here -->
+      <CensusPlaceholder />
+      <CensusPlaceholder />
+      <CensusPlaceholder />
+      <CensusPlaceholder />
+      <CensusPlaceholder />
+      <CensusPlaceholder />
     </div>
   </section>
   <footer class="almanac-footer">
