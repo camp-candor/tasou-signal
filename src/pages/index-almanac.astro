@@ -1,0 +1,101 @@
+---
+// src/pages/index-almanac.astro
+import AlmanacLayout from '../layouts/AlmanacLayout.astro';
+---
+
+<AlmanacLayout>
+  <header class="almanac-header">
+    <h1>The Blackwood Parish Almanac</h1>
+    <p class="living-date">The 217th Day since the River Beckoned.</p>
+  </header>
+  <nav class="almanac-nav">
+    <!-- ... nav links ... -->
+  </nav>
+  <section id="survey" class="scroll-section">
+    <!-- Survey/Map component will go here -->
+  </section>
+  <section id="testaments" class="scroll-section">
+    <div class="testaments-grid">
+      <!-- Asymmetrical grid of testament cards will go here -->
+    </div>
+  </section>
+  <section id="census" class="scroll-section">
+    <div class="census-grid">
+      <!-- Grid of charcoal portrait components will go here -->
+    </div>
+  </section>
+  <footer class="almanac-footer">
+    <!-- ... final CTA ... -->
+  </footer>
+</AlmanacLayout>
+
+<script>
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-visible');
+        }
+      });
+    },
+    { rootMargin: '0px 0px -150px 0px' }
+  );
+
+  document.querySelectorAll('.scroll-section').forEach((el) => observer.observe(el));
+</script>
+
+<style>
+  .scroll-section {
+    opacity: 0;
+    transform: translateY(3rem);
+    transition:
+      opacity 1s ease-out,
+      transform 0.8s ease-out;
+  }
+  .scroll-section.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .almanac-content {
+    display: grid;
+    grid-template-columns: 1fr min(1200px, 90vw) 1fr; /* Center column for content */
+  }
+  .almanac-content > * {
+    grid-column: 2;
+  }
+  #survey {
+    grid-column: 1 / -1; /* Span all columns, from first to last */
+    width: 100%;
+    position: relative; /* For positioning overlays like the fog */
+  }
+  .testaments-grid,
+  .census-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    padding: 4rem 0;
+  }
+  .testament-card,
+  .census-portrait {
+    background: var(--paper-bg); /* Make them look like their own pieces of paper */
+    padding: 1.5rem;
+    box-shadow: 2px 2px 15px rgba(0, 0, 0, 0.5); /* Lift off the page */
+    border: 1px solid rgba(0, 0, 0, 0.2);
+  }
+  .testament-card:nth-child(5n + 1) {
+    transform: rotate(-1.5deg);
+  }
+  .testament-card:nth-child(5n + 2) {
+    transform: rotate(0.8deg);
+  }
+  .testament-card:nth-child(5n + 3) {
+    transform: rotate(2deg);
+    margin-top: -1rem;
+  }
+  .testament-card:nth-child(5n + 4) {
+    transform: rotate(-0.5deg);
+  }
+  .testament-card.is-wide {
+    grid-column: span 2; /* This card will take up two columns */
+  }
+</style>
