@@ -1,0 +1,343 @@
+---
+// src/components/SurveyMap.astro
+
+// In a real application, this data would be fetched from your Markdown/JSON content files.
+// For this component, we define it here for a self-contained implementation.
+const locations = [
+  {
+    id: 'salvation',
+    position: { top: '50%', left: '20%' },
+    title: 'Salvation',
+    status: 'Shelter',
+    description:
+      'The only safe harbor in this forsaken parish. A rickety collection of clapboard and hope clinging to the edge of the swamp.',
+  },
+  {
+    id: 'forsaken-manor',
+    position: { top: '30%', left: '70%' },
+    title: 'The Blackwood Manor',
+    status: 'Forsaken',
+    description:
+      'A crumbling plantation manor, its history soaked in sorrow. The air here is heavy, and the dead do not rest easy.',
+  },
+];
+---
+
+<!-- --- HTML STRUCTURE --- -->
+<div id="survey-container">
+  <div class="map-wrapper">
+    <!-- Layer 1: The Revealed Map (Bottom, Masked) -->
+    <div class="map-layer" id="revealed-map"></div>
+
+    <!-- Layer 2: The Ethereal Miasma (Animated Fog) -->
+    <div class="map-layer" id="ethereal-miasma"></div>
+
+    <!-- The Draggable Scrying Lens -->
+    <div id="scrying-lens">
+      <div class="lens-sizzle-effect"></div>
+      <img src="/images/scrying-lens.svg" alt="A dark crystal scrying lens." />
+    </div>
+
+    <!-- Landmark Markers -->
+    <div class="markers-container">
+      {
+        locations.map((loc) => (
+          <div
+            class:list={['marker', loc.id]}
+            style={`top: ${loc.position.top}; left: ${loc.position.left};`}
+            data-id={loc.id}
+            data-title={loc.title}
+            data-status={loc.status}
+            data-description={loc.description}
+          />
+        ))
+      }
+    </div>
+  </div>
+
+  <!-- The Location Card (Initially Hidden) -->
+  <div id="location-card-container">
+    <div class="location-card">
+      <h3 id="card-title"></h3>
+      <p id="card-status"></p>
+      <p id="card-description"></p>
+      <button id="card-close-button">[ Bear Witness ]</button>
+    </div>
+  </div>
+</div>
+
+<!-- --- CSS STYLING --- -->
+<style>
+  #survey-container {
+    position: relative;
+    padding: 1rem;
+    background: #0a0a0a;
+    box-shadow: inset 0 0 50px #000;
+    border: 4px solid #3d352a;
+    margin: 2rem 0;
+  }
+
+  .map-wrapper {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    cursor: none; /* Hide the default cursor over the map */
+  }
+
+  .map-layer {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  #revealed-map {
+    background-image: url('/maps/world_map_revealed.jpg');
+    background-size: cover;
+    -webkit-mask-image: url('/svg/discovered_mask.svg');
+    mask-image: url('/svg/discovered_mask.svg');
+    -webkit-mask-size: cover;
+    mask-size: cover;
+  }
+
+  #ethereal-miasma {
+    background-image: url('/textures/miasma-noise.png');
+    background-size: 200%;
+    animation: slow-swirl 80s linear infinite alternate;
+    mix-blend-mode: screen;
+    opacity: 0.6;
+    /* This mask is the key to the reveal effect */
+    -webkit-mask-image: radial-gradient(
+      circle 120px at var(--lens-x, -500px) var(--lens-y, -500px),
+      transparent 0%,
+      black 100%
+    );
+    mask-image: radial-gradient(
+      circle 120px at var(--lens-x, -500px) var(--lens-y, -500px),
+      transparent 0%,
+      black 100%
+    );
+  }
+  @keyframes slow-swirl {
+    to {
+      background-position: 100% 100%;
+    }
+  }
+
+  #scrying-lens {
+    position: absolute;
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    top: var(--lens-y, -500px);
+    left: var(--lens-x, -500px);
+    transform: translate(-50%, -50%);
+    will-change: top, left;
+    pointer-events: none;
+    z-index: 10;
+    opacity: 0;
+    transition: opacity 0.5s;
+  }
+  #scrying-lens.is-visible {
+    opacity: 1;
+  }
+  #scrying-lens img {
+    width: 100%;
+    height: 100%;
+    filter: drop-shadow(0 5px 15px rgba(0, 0, 0, 0.5));
+  }
+
+  .lens-sizzle-effect {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    box-shadow: 0 0 10px 5px rgba(200, 220, 255, 0.2);
+    animation: sizzle 0.5s infinite;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  #scrying-lens.is-active .lens-sizzle-effect {
+    opacity: 1;
+  }
+  @keyframes sizzle {
+    0%,
+    100% {
+      transform: scale(0.98);
+      box-shadow: 0 0 10px 5px rgba(200, 220, 255, 0.2);
+    }
+    50% {
+      transform: scale(1.02);
+      box-shadow: 0 0 15px 8px rgba(220, 240, 255, 0.3);
+    }
+  }
+
+  .markers-container {
+    position: absolute;
+    inset: 0;
+    z-index: 5;
+  }
+  .marker {
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    cursor: none; /* We use the lens, so markers don't need their own cursor */
+    transition: box-shadow 0.3s ease;
+  }
+  .marker:hover {
+    box-shadow: 0 0 20px 10px rgba(255, 255, 220, 0.3);
+  }
+
+  .salvation {
+    background-color: #ffab40;
+    box-shadow: 0 0 15px 5px #ffab40;
+    animation: pulse 4s infinite ease-in-out;
+  }
+  @keyframes pulse {
+    0%,
+    100% {
+      box-shadow: 0 0 15px 5px #ffab40;
+    }
+    50% {
+      box-shadow: 0 0 25px 12px #ffab40;
+    }
+  }
+  .forsaken-manor {
+    background-color: rgba(100, 0, 0, 0.5);
+    border: 1px solid rgba(100, 0, 0, 0.8);
+  }
+
+  #location-card-container {
+    position: absolute;
+    top: var(--card-y, 50%);
+    left: var(--card-x, 50%);
+    z-index: 50;
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.8);
+    pointer-events: none;
+    transition:
+      opacity 0.5s cubic-bezier(0.19, 1, 0.22, 1),
+      transform 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+  }
+  #location-card-container.is-visible {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+    pointer-events: auto;
+  }
+  .location-card {
+    width: min(400px, 80vw);
+    padding: 1.5rem;
+    background-image: url('/images/location_card_bg.png');
+    background-size: cover;
+    border: 2px solid #5a4a3a;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(5px);
+    text-align: center;
+  }
+  #card-close-button {
+    background: none;
+    border: none;
+    font-family: var(--body-font);
+    font-style: italic;
+    color: var(--ink-color);
+    cursor: pointer;
+    margin-top: 1rem;
+    font-size: 1.1rem;
+  }
+</style>
+
+<!-- --- JAVASCRIPT LOGIC --- -->
+<script>
+  const surveyContainer = document.getElementById('survey-container') as HTMLElement | null;
+  const lens = document.getElementById('scrying-lens') as HTMLElement | null;
+  // const miasma = document.getElementById('ethereal-miasma') as HTMLElement | null;
+  const cardContainer = document.getElementById('location-card-container') as HTMLElement | null;
+  const cardCloseButton = document.getElementById('card-close-button') as HTMLElement | null;
+  const markers = document.querySelectorAll('.marker');
+
+  const sizzleSound = new Audio('/sounds/lens-sizzle.mp3');
+  sizzleSound.loop = true;
+  sizzleSound.volume = 0;
+  const materializeSound = new Audio('/sounds/card-materialize.mp3');
+
+  let animationFrameId: number;
+
+  function handleMouseMove(e: MouseEvent) {
+    cancelAnimationFrame(animationFrameId);
+    animationFrameId = requestAnimationFrame(() => {
+      if (surveyContainer) {
+        const rect = surveyContainer.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+
+        // Update CSS variables for lens position and miasma mask
+        surveyContainer.style.setProperty('--lens-x', `${x}px`);
+        surveyContainer.style.setProperty('--lens-y', `${y}px`);
+      }
+    });
+  }
+
+  function handleMouseEnter() {
+    if (lens) {
+      lens.classList.add('is-visible');
+      lens.classList.add('is-active');
+      if (sizzleSound.paused) {
+        sizzleSound.play();
+      }
+      sizzleSound.animate([{ volume: 0.5 }], { duration: 300, fill: 'forwards' });
+    }
+  }
+
+  function handleMouseLeave() {
+    if (lens) {
+      lens.classList.remove('is-visible');
+      lens.classList.remove('is-active');
+      sizzleSound.animate([{ volume: 0 }], { duration: 300, fill: 'forwards' }).onfinish = () => {
+        sizzleSound.pause();
+        sizzleSound.currentTime = 0;
+      };
+    }
+  }
+
+  function handleMarkerClick(e: MouseEvent) {
+    const target = e.currentTarget as HTMLElement;
+    const locationData = { ...target.dataset };
+    const markerRect = target.getBoundingClientRect();
+    if (surveyContainer && cardContainer) {
+      const containerRect = surveyContainer.getBoundingClientRect();
+      const cardX = markerRect.left + markerRect.width / 2 - containerRect.left;
+      const cardY = markerRect.top + markerRect.height / 2 - containerRect.top;
+
+      const cardTitle = cardContainer.querySelector('#card-title');
+      const cardStatus = cardContainer.querySelector('#card-status');
+      const cardDescription = cardContainer.querySelector('#card-description');
+
+      if (cardTitle) cardTitle.textContent = locationData.title ?? '';
+      if (cardStatus) cardStatus.textContent = `Status: ${locationData.status ?? ''}`;
+      if (cardDescription) cardDescription.textContent = locationData.description ?? '';
+
+      cardContainer.style.setProperty('--card-x', `${cardX}px`);
+      cardContainer.style.setProperty('--card-y', `${cardY}px`);
+      cardContainer.classList.add('is-visible');
+
+      materializeSound.currentTime = 0;
+      materializeSound.play();
+    }
+  }
+
+  // Attach all event listeners
+  if (surveyContainer) {
+    surveyContainer.addEventListener('mousemove', handleMouseMove);
+    surveyContainer.addEventListener('mouseenter', handleMouseEnter);
+    surveyContainer.addEventListener('mouseleave', handleMouseLeave);
+  }
+  markers.forEach((marker) => marker.addEventListener('click', handleMarkerClick));
+  if (cardCloseButton) {
+    cardCloseButton.addEventListener('click', () => {
+      if (cardContainer) {
+        cardContainer.classList.remove('is-visible');
+      }
+    });
+  }
+</script>
