@@ -1,0 +1,137 @@
+/* Styles for the Almanac decorative separators */
+
+/* 1. Refined Stitched Seam */
+.stitched-seam {
+  height: 25px;
+  width: 100%;
+  margin: 2rem 0;
+  position: relative;
+}
+
+.stitched-seam::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url('/textures/sinew-stitch.png');
+  background-repeat: repeat-x;
+  background-position: center;
+  background-size: contain;
+  filter: drop-shadow(0px 2px 2px rgba(0, 0, 0, 0.6));
+  z-index: 2;
+}
+
+.stitched-seam::after {
+  content: '';
+  position: absolute;
+  inset: -5px 0; /* Slightly larger than the seam */
+  background: linear-gradient(to right, rgba(0, 0, 0, 0.15), rgba(255, 255, 255, 0.05), rgba(0, 0, 0, 0.15));
+  box-shadow:
+    inset 0 3px 3px rgba(0, 0, 0, 0.4),
+    inset 0 -3px 3px rgba(0, 0, 0, 0.4);
+  border-radius: 50%;
+  filter: blur(3px);
+  z-index: 1;
+}
+
+/* 2. Refined Surveyor's Tools */
+.surveyors-tools {
+  height: 150px;
+  width: 100%;
+  margin-top: -50px;
+  position: relative;
+  background-image: url('/images/surveyors-tools.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  filter: drop-shadow(0px 4px 8px rgba(0, 0, 0, 0.4));
+}
+
+.candle-light-overlay {
+  position: absolute;
+  top: 20%;
+  left: 70%;
+  width: 150px;
+  height: 150px;
+  background: radial-gradient(circle, rgba(255, 180, 90, 0.4) 0%, transparent 60%);
+  border-radius: 50%;
+  animation: candle-flicker 2s infinite ease-in-out;
+  pointer-events: none;
+}
+
+@keyframes candle-flicker {
+  0% {
+    transform: scale(1);
+    opacity: 0.4;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.45;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 0.4;
+  }
+}
+
+/* For the magnifying glass distortion */
+.surveyors-tools.distort {
+  filter: drop-shadow(0px 4px 8px rgba(0, 0, 0, 0.4)) url(#magnify-distortion);
+}
+
+/* 3. Refined Rusted Nameplate */
+.rusted-nameplate {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 80px;
+  background-image: url('/textures/rusted-plate.png');
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  font-family: 'Copperplate', 'Palatino Linotype', 'Book Antiqua', Palatino, serif;
+  font-size: 2.5rem;
+  color: rgba(255, 255, 255, 0.8);
+  text-shadow: 1px 1px 10px rgba(0, 0, 0, 0.8);
+  margin: 2rem 0;
+  position: relative;
+}
+
+.plate-text {
+  padding: 0 4rem;
+}
+
+.rusted-nameplate::after {
+  content: '';
+  position: absolute;
+  bottom: -40px;
+  left: 0;
+  right: 0;
+  height: 40px;
+  background: linear-gradient(to bottom, rgba(139, 69, 19, 0.2), /* A transparent rusty brown */ transparent);
+  filter: blur(5px);
+  z-index: -1;
+}
+
+/* 4. Ink Blot & Epigraph */
+.ink-blot-epigraph {
+  position: relative;
+  padding: 3rem;
+  background-image: url('/textures/ink-blot.png');
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 80%;
+  -webkit-mask-image: radial-gradient(circle at var(--mouse-x) var(--mouse-y), black 50px, transparent 150px);
+  mask-image: radial-gradient(circle at var(--mouse-x) var(--mouse-y), black 50px, transparent 150px);
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  cursor: none;
+}
+
+.epigraph-text {
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+  font-size: 1.5rem;
+  text-align: center;
+  color: var(--ink-color);
+  max-width: 50ch;
+  margin: 0 auto;
+}
