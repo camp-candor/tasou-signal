@@ -1,6 +1,7 @@
 ---
 // src/pages/index-almanac.astro
 import AlmanacLayout from '../layouts/AlmanacLayout.astro';
+import KeyholeIcon from '~/components/KeyholeIcon.astro';
 import SurveyPlaceholder from '../components/widgets/SurveyPlaceholder.astro';
 import TestamentPlaceholder from '../components/widgets/TestamentPlaceholder.astro';
 import CensusPlaceholder from '../components/widgets/CensusPlaceholder.astro';
@@ -13,7 +14,18 @@ import '~/assets/styles/almanac-separators.css';
     <p class="living-date">The 217th Day since the River Beckoned.</p>
   </header>
   <nav class="almanac-nav">
-    <!-- ... nav links ... -->
+    <div class="nav-links">
+      <a href="#survey" class="nav-link">The Survey</a>
+      <a href="#testaments" class="nav-link">The Testaments</a>
+      <a href="#census" class="nav-link">The Census</a>
+      <a href="#whispers" class="nav-link">Whispers & Warnings</a>
+    </div>
+    <div class="auth-link-container">
+      <button id="signInButton" class="auth-link">
+        <KeyholeIcon />
+        <span>Inscribe Your Name</span>
+      </button>
+    </div>
   </nav>
 
   <!-- Surveyor's Tools Separator -->
