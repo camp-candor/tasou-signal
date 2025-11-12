@@ -17,6 +17,9 @@ import CensusPlaceholder from '../components/widgets/CensusPlaceholder.astro';
   <section id="survey" class="scroll-section">
     <SurveyPlaceholder />
   </section>
+
+  <div class="separator stitched-seam" role="presentation"></div>
+
   <section id="testaments" class="scroll-section">
     <div class="testaments-grid">
       <TestamentPlaceholder />
@@ -26,6 +29,11 @@ import CensusPlaceholder from '../components/widgets/CensusPlaceholder.astro';
       <TestamentPlaceholder />
     </div>
   </section>
+
+  <div class="separator surveyors-tools" role="presentation">
+    <div class="candle-light-overlay"></div>
+  </div>
+
   <section id="census" class="scroll-section">
     <div class="census-grid">
       <CensusPlaceholder />
@@ -36,6 +44,15 @@ import CensusPlaceholder from '../components/widgets/CensusPlaceholder.astro';
       <CensusPlaceholder />
     </div>
   </section>
+
+  <div class="separator rusted-nameplate" role="presentation">
+    <h3 class="plate-text">The Census</h3>
+  </div>
+
+  <div class="separator ink-blot-epigraph" role="presentation">
+      <p class="epigraph-text">...and so the Parish keeps its own accounts.</p>
+  </div>
+
   <footer class="almanac-footer">
     <!-- ... final CTA ... -->
   </footer>
@@ -109,5 +126,159 @@ import CensusPlaceholder from '../components/widgets/CensusPlaceholder.astro';
   }
   .testament-card.is-wide {
     grid-column: span 2; /* This card will take up two columns */
+  }
+
+  /* Refined Stitched Seam */
+  .stitched-seam {
+    height: 25px;
+    width: 100%;
+    margin: 2rem 0;
+    position: relative;
+  }
+
+  /* The stitch image itself, slightly darker */
+  .stitched-seam::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url('/textures/sinew-stitch.png');
+    background-repeat: repeat-x;
+    background-position: center;
+    background-size: contain;
+    filter: drop-shadow(0px 2px 2px rgba(0,0,0,0.6));
+    z-index: 2;
+  }
+
+  /* The puckering effect on the paper underneath */
+  .stitched-seam::after {
+    content: '';
+    position: absolute;
+    inset: -5px 0; /* Slightly larger than the seam */
+    background: linear-gradient(to right,
+      rgba(0,0,0,0.15),
+      rgba(255,255,255,0.05),
+      rgba(0,0,0,0.15)
+    );
+    /* This creates the highlight/shadow effect of puckered paper */
+    box-shadow: inset 0 3px 3px rgba(0,0,0,0.4),
+                inset 0 -3px 3px rgba(0,0,0,0.4);
+    border-radius: 50%;
+    filter: blur(3px);
+    z-index: 1;
+  }
+
+  /* Refined Surveyor's Tools */
+  .surveyors-tools {
+    height: 150px;
+    width: 100%;
+    margin-top: -50px;
+    position: relative;
+    background-image: url('/images/surveyors-tools.png'); /* The PNG of the tools */
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    filter: drop-shadow(0px 4px 8px rgba(0,0,0,0.4)) url(#magnify-distortion);
+  }
+
+  /* The candle's own light source */
+  .candle-light-overlay {
+    position: absolute;
+    /* Position this directly over the candle flame in your image */
+    top: 20%;
+    left: 70%;
+    width: 150px;
+    height: 150px;
+    background: radial-gradient(circle,
+      rgba(255, 180, 90, 0.4) 0%,
+      transparent 60%
+    );
+    border-radius: 50%;
+    /* A faster, more erratic flicker than the main gaslamp */
+    animation: candle-flicker 2s infinite ease-in-out;
+    pointer-events: none;
+  }
+
+  @keyframes candle-flicker {
+    0%   { transform: scale(1); opacity: 0.4; }
+    50%  { transform: scale(1.1); opacity: 0.45; }
+    100% { transform: scale(1); opacity: 0.4; }
+  }
+
+  /* Refined Rusted Nameplate */
+  .rusted-nameplate {
+    background-color: #5a3a22;
+    padding: 1rem 2rem;
+    text-align: center;
+    border: 2px solid #3e2723;
+    box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    position: relative; /* Needed for pseudo-elements */
+  }
+
+  .plate-text {
+    color: #d7ccc8;
+    font-family: serif;
+    font-size: 2rem;
+  }
+
+  /* The rust bleed effect */
+  .rusted-nameplate::after {
+    content: '';
+    position: absolute;
+    bottom: -40px; /* Position below the plate */
+    left: 0;
+    right: 0;
+    height: 40px;
+    background: linear-gradient(to bottom,
+      rgba(139, 69, 19, 0.2), /* A transparent rusty brown */
+      transparent
+    );
+    filter: blur(5px);
+    z-index: -1; /* Place it behind the main content but on top of the paper */
+  }
+
+  /* Torn paper effect */
+  .rusted-nameplate::before {
+    content: '';
+    position: absolute;
+    top: -5px;
+    left: -5px;
+    right: -5px;
+    bottom: -5px;
+    border: 1px solid rgba(0,0,0,0.1);
+    border-radius: 2px;
+    transform: rotate(-0.2deg);
+    z-index: -1;
+  }
+
+  /* Refined Ink Blot & Epigraph */
+  .ink-blot-epigraph {
+    position: relative;
+    padding: 4rem 1rem;
+    text-align: center;
+    min-height: 100px;
+    /* Add the static ink blot image as a background */
+    background-image: url('/images/ink-blot.png');
+    background-size: 350px 250px;
+    background-repeat: no-repeat;
+    background-position: center;
+  }
+
+  .epigraph-text {
+    font-size: 1.2rem;
+    font-style: italic;
+    color: var(--ink-color, #1a1a1a); /* The text is now solid ink color */
+
+    /* THE MASKING EFFECT */
+    /* Create a mask where everything is black (invisible) except for a
+       white circle (visible) that follows the cursor. */
+    mask-image: radial-gradient(
+      circle 75px at var(--mouse-x, -100px) var(--mouse-y, -100px),
+      white 100%,
+      black 100%
+    );
+    /* Fallback for browsers that don't support masking */
+    @supports not (mask-image: radial-gradient(circle, white, black)) {
+      opacity: 0.6; /* Just make it faded if masking fails */
+    }
   }
 </style>
