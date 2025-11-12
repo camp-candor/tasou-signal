@@ -88,3 +88,55 @@
 .dd *:first-child {
   margin-top: 0;
 }
+
+body {
+  --paper-bg: #f5f5dc;
+  --ink-color: #3a3a3a;
+  --body-font: serif;
+  background-color: #3d352a; /* Fallback color */
+  background-image: var(--paper-bg); /* Tileable paper texture */
+  color: var(--ink-color);
+  font-family: var(--body-font);
+  cursor: url('/wisps/wisp.png'), auto; /* Custom cursor */
+}
+
+/* Water stains at the edges, fixed behind content */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url('/textures/water-stains.png');
+  background-size: cover;
+  opacity: 0.4;
+  z-index: -2; /* Deepest layer */
+  pointer-events: none;
+}
+
+/* Flickering gaslamp overlay, also fixed */
+body::after {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at 50% 0%, rgba(240, 170, 70, 0.3) 0%, transparent 70%);
+  animation: gaslamp-flicker 7s infinite ease-in-out;
+  z-index: -1; /* Above the stains, behind content */
+  pointer-events: none;
+}
+
+@keyframes gaslamp-flicker {
+  0%,
+  100% {
+    opacity: 0.8;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+}

@@ -1,0 +1,131 @@
+---
+// src/pages/index-almanac.astro
+import AlmanacLayout from '../layouts/AlmanacLayout.astro';
+---
+
+<AlmanacLayout>
+  <header class="almanac-header">
+    <h1>The Blackwood Parish Almanac</h1>
+    <p class="living-date">The 217th Day since the River Beckoned.</p>
+  </header>
+  <nav class="almanac-nav">
+    <a href="#survey">Survey of the Parish</a>
+    <a href="#testaments">Testaments</a>
+    <a href="#census">Census of the Lost</a>
+  </nav>
+  <section id="survey" class="scroll-section">
+    <h2>A Survey of the Parish</h2>
+    <p>A hand-drawn map of the parish, with annotations marking points of interest and danger.</p>
+    <img src="https://picsum.photos/seed/picsum/1200/400" alt="A map of the Blackwood Parish" style="width: 100%; height: auto;"/>
+  </section>
+  <section id="testaments" class="scroll-section">
+    <div class="testaments-grid">
+        <div class="testament-card">
+            <h3>The Miller's Tale</h3>
+            <p>"The river whispers at night. It promises secrets to those who listen."</p>
+        </div>
+        <div class="testament-card is-wide">
+            <h3>The Blacksmith's Lament</h3>
+            <p>"I forged the chains that bind the beast in the old church, but I fear they will not hold."</p>
+        </div>
+        <div class="testament-card">
+            <h3>The Seamstress's Prophecy</h3>
+            <p>"A thread of shadow runs through this town, and it is beginning to unravel."</p>
+        </div>
+        <div class="testament-card">
+            <h3>The Grave Digger's Warning</h3>
+            <p>"The dead do not rest easy in Blackwood. They walk when the moon is new."</p>
+        </div>
+    </div>
+  </section>
+  <section id="census" class="scroll-section">
+    <div class="census-grid">
+        <div class="census-portrait">
+            <h4>Eleanor Vance</h4>
+            <p>Lost to the fog on the moors.</p>
+        </div>
+        <div class="census-portrait">
+            <h4>Thomas Cole</h4>
+            <p>Taken by the river's current.</p>
+        </div>
+        <div class="census-portrait">
+            <h4>Mary Anne</h4>
+            <p>Vanished from her bedchamber.</p>
+        </div>
+    </div>
+  </section>
+  <footer class="almanac-footer">
+    <p>May the gaslamp guide you through the darkness.</p>
+  </footer>
+</AlmanacLayout>
+
+<script>
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-visible');
+        }
+      });
+    },
+    { rootMargin: '0px 0px -150px 0px' }
+  );
+
+  document.querySelectorAll('.scroll-section').forEach((el) => observer.observe(el));
+</script>
+
+<style>
+  .scroll-section {
+    opacity: 0;
+    transform: translateY(3rem);
+    transition:
+      opacity 1s ease-out,
+      transform 0.8s ease-out;
+  }
+  .scroll-section.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .almanac-content {
+    display: grid;
+    grid-template-columns: 1fr min(1200px, 90vw) 1fr; /* Center column for content */
+  }
+  .almanac-content > * {
+    grid-column: 2;
+  }
+  #survey {
+    grid-column: 1 / -1; /* Span all columns, from first to last */
+    width: 100%;
+    position: relative; /* For positioning overlays like the fog */
+  }
+  .testaments-grid,
+  .census-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    padding: 4rem 0;
+  }
+  .testament-card,
+  .census-portrait {
+    background: var(--paper-bg); /* Make them look like their own pieces of paper */
+    padding: 1.5rem;
+    box-shadow: 2px 2px 15px rgba(0, 0, 0, 0.5); /* Lift off the page */
+    border: 1px solid rgba(0, 0, 0, 0.2);
+  }
+  .testament-card:nth-child(5n + 1) {
+    transform: rotate(-1.5deg);
+  }
+  .testament-card:nth-child(5n + 2) {
+    transform: rotate(0.8deg);
+  }
+  .testament-card:nth-child(5n + 3) {
+    transform: rotate(2deg);
+    margin-top: -1rem;
+  }
+  .testament-card:nth-child(5n + 4) {
+    transform: rotate(-0.5deg);
+  }
+  .testament-card.is-wide {
+    grid-column: span 2; /* This card will take up two columns */
+  }
+</style>
