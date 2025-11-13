@@ -1,0 +1,271 @@
+---
+// src/components/CensusSepulcher.astro
+const characters = [
+  // This data would be fetched from your content files
+  {
+    name: 'Silas Blackwood',
+    status: 'given',
+    epitaph: '"The swamp... it remembers."',
+    portrait: 'silas',
+    audio: 'whisper-1',
+  },
+  {
+    name: 'Eleanor Vance',
+    status: 'wandering',
+    epitaph: '"I will find what he lost."',
+    portrait: 'eleanor',
+    audio: 'whisper-2',
+  },
+  {
+    name: 'Brother Micah',
+    status: 'sheltered',
+    epitaph: '"Salvation is a flickering light."',
+    portrait: 'micah',
+    audio: 'whisper-3',
+  },
+];
+---
+
+<section id="census" class="content-section">
+  <div class="sepulcher-wall">
+    <div class="sepulcher-corridor">
+      {
+        characters.map((char) => (
+          <div
+            class="sepulcher-niche"
+            data-status={char.status}
+            data-audio={`/sounds/${char.audio}.mp3`}
+            data-epitaph={char.epitaph}
+          >
+            <div class="death-mask-container">
+              <img
+                src={`/images/masks/${char.portrait}-${char.status}.png`}
+                alt={`Death mask of ${char.name}`}
+                class="death-mask"
+              />
+              <div class="mask-glow" />
+            </div>
+            <div class="candle-container">
+              <img
+                src={`/images/candle-${char.status === 'given' ? 'broken' : 'whole'}.png`}
+                alt="Votive candle"
+                class="candle"
+              />
+              <div class="ember-glow" />
+            </div>
+            <div class="nameplate">
+              <span class="character-name">{char.name}</span>
+              <span class="epitaph-text" />
+            </div>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  /* --- The Census - Sepulcher of Whispers --- */
+  .content-section {
+    padding: 4rem 0;
+  }
+
+  .sepulcher-wall {
+    width: 100%;
+    padding: 2rem 0;
+    background-image: url('/textures/wet-stone-wall.jpg');
+    box-shadow: inset 0 0 50px #000;
+    overflow-x: auto; /* Enable horizontal scrolling */
+    -webkit-overflow-scrolling: touch; /* Smooth scrolling on mobile */
+  }
+
+  .sepulcher-corridor {
+    display: flex;
+    width: max-content; /* Allow the corridor to be wider than the screen */
+    padding: 0 5vw;
+  }
+
+  .sepulcher-niche {
+    position: relative;
+    flex: 0 0 250px; /* Each niche has a fixed width */
+    height: 400px;
+    margin: 0 1.5rem;
+    background-image: url('/images/stone-niche.png');
+    background-size: 100% 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+
+    /* The wisp's dynamic light effect */
+    background-image:
+      radial-gradient(
+        circle 200px at var(--wisp-x, -999px) var(--wisp-y, -999px),
+        rgba(255, 220, 180, 0.1) 0%,
+        transparent 70%
+      ),
+      url('/images/stone-niche.png');
+  }
+
+  .death-mask-container {
+    position: relative;
+  }
+  .death-mask {
+    width: 150px;
+    filter: drop-shadow(0 4px 10px #000);
+  }
+  .mask-glow {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle, #fff 0%, transparent 70%);
+    opacity: 0;
+    transition: opacity 0.5s;
+  }
+  .sepulcher-niche.is-active .mask-glow {
+    opacity: 0.1;
+    animation: pulse 3s infinite;
+  }
+
+  .candle-container {
+    position: relative;
+    margin-top: 1rem;
+  }
+  .ember-glow {
+    position: absolute;
+    top: -5px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #ffab40;
+    box-shadow: 0 0 10px 5px #ffab40;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .sepulcher-niche:hover .ember-glow {
+    opacity: 1;
+  }
+
+  .nameplate {
+    margin-top: 1rem;
+    text-align: center;
+  }
+  .character-name {
+    font-family: 'Special Elite', monospace;
+    color: #a09080;
+    transition: opacity 0.3s;
+  }
+  .sepulcher-niche:hover .character-name {
+    opacity: 0;
+  }
+  .epitaph-text {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    font-family: 'IM Fell English', serif;
+    font-style: italic;
+    color: #fff;
+    opacity: 0;
+    transition: opacity 0.5s 0.3s; /* Delayed fade-in */
+    text-shadow: 0 0 10px #fff;
+  }
+  .sepulcher-niche.is-active .epitaph-text {
+    opacity: 1;
+  }
+</style>
+<script>
+  const wall = document.querySelector('.sepulcher-wall');
+  const niches = document.querySelectorAll('.sepulcher-niche');
+
+  const ambience = new Audio('/sounds/sepulcher-ambience.mp3');
+  ambience.loop = true;
+  ambience.volume = 0;
+
+  const emberSound = new Audio('/sounds/ember-glow.mp3');
+  const activateSound = new Audio('/sounds/mask-activate.mp3');
+  let activeWhisper: HTMLAudioElement | null = null;
+  let hasInteracted = false;
+
+  // --- Wisp Lighting Effect ---
+  if (wall) {
+    wall.addEventListener('mousemove', (e: MouseEvent) => {
+      niches.forEach((niche) => {
+        const nicheRect = niche.getBoundingClientRect();
+        const nicheX = e.clientX - nicheRect.left;
+        const nicheY = e.clientY - nicheRect.top;
+        (niche as HTMLElement).style.setProperty('--wisp-x', `${nicheX}px`);
+        (niche as HTMLElement).style.setProperty('--wisp-y', `${nicheY}px`);
+      });
+    });
+  }
+
+  // --- Audio and Interaction Logic ---
+  function startAmbience() {
+    if (!hasInteracted) {
+      ambience.play();
+      ambience.animate({ volume: 0.3 }, { duration: 2000, fill: 'forwards' });
+      hasInteracted = true;
+    }
+  }
+
+  niches.forEach((niche) => {
+    niche.addEventListener('mouseenter', () => {
+      startAmbience();
+      if ((niche as HTMLElement).dataset.status !== 'sheltered') {
+        emberSound.currentTime = 0;
+        emberSound.volume = 0.5;
+        emberSound.play();
+      }
+    });
+
+    niche.addEventListener('click', () => {
+      // If this one is already active, do nothing.
+      if (niche.classList.contains('is-active')) return;
+
+      // Deactivate all others
+      niches.forEach((n) => n.classList.remove('is-active'));
+      if (activeWhisper) {
+        activeWhisper.pause();
+      }
+
+      // Activate this one
+      niche.classList.add('is-active');
+      activateSound.currentTime = 0;
+      activateSound.play();
+
+      const audioSrc = (niche as HTMLElement).dataset.audio;
+      if (audioSrc) {
+        activeWhisper = new Audio(audioSrc);
+        activeWhisper.volume = 0.8;
+        activeWhisper.play();
+      }
+
+      const epitaphEl = niche.querySelector('.epitaph-text');
+      if (epitaphEl) {
+        epitaphEl.textContent = (niche as HTMLElement).dataset.epitaph || '';
+      }
+
+      // Set a timeout to clear the active state
+      setTimeout(() => {
+        niche.classList.remove('is-active');
+        if (epitaphEl) {
+          epitaphEl.textContent = '';
+        }
+      }, 5000); // Display for 5 seconds
+    });
+  });
+
+  // Start ambience on first scroll into view
+  if (wall) {
+    const observer = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting) {
+        wall.addEventListener('click', startAmbience, { once: true });
+        observer.disconnect();
+      }
+    });
+    observer.observe(wall);
+  }
+</script>

@@ -4,7 +4,7 @@ import AlmanacLayout from '../layouts/AlmanacLayout.astro';
 import KeyholeIcon from '~/components/KeyholeIcon.astro';
 import SurveyMap from '~/components/SurveyMap.astro';
 import TestamentsDrawer from '../components/TestamentsDrawer.astro';
-import CensusPlaceholder from '../components/widgets/CensusPlaceholder.astro';
+import CensusSepulcher from '../components/CensusSepulcher.astro';
 import '~/assets/styles/almanac-separators.css';
 ---
 
@@ -47,21 +47,7 @@ import '~/assets/styles/almanac-separators.css';
   <!-- Stitched Seam Separator -->
   <div class="stitched-seam"></div>
 
-  <section id="census" class="scroll-section">
-    <!-- Rusted Nameplate Separator -->
-    <div class="rusted-nameplate">
-      <div class="plate-text">The Census</div>
-    </div>
-
-    <div class="census-grid">
-      <CensusPlaceholder />
-      <CensusPlaceholder />
-      <CensusPlaceholder />
-      <CensusPlaceholder />
-      <CensusPlaceholder />
-      <CensusPlaceholder />
-    </div>
-  </section>
+  <CensusSepulcher />
 
   <!-- Rusted Nameplate Separator for Whispers -->
   <div class="rusted-nameplate">
