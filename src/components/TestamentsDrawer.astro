@@ -1,0 +1,259 @@
+---
+// src/components/TestamentsDrawer.astro
+
+const testaments = [
+  // This data would be fetched from your content files
+  {
+    type: 'diary',
+    title: "Explorer's Journal",
+    fullText:
+      'Day 3: The air grows thick. The compass spins. I saw something in the water, something with too many eyes...',
+  },
+  {
+    type: 'letter',
+    title: 'A Sealed Warning',
+    fullText:
+      'To my dearest Eleanor, Do not follow me to Salvation. The Parish is not what it seems. The whispers are real...',
+  },
+  {
+    type: 'telegram',
+    title: 'Urgent Telegram',
+    fullText: 'FADED TELEGRAM STOP PARTY MISSING SINCE TUESDAY STOP LAST SEEN NEAR SUNKEN CHAPEL STOP...',
+  },
+  {
+    type: 'diary',
+    title: 'The Mad Poet',
+    fullText: 'The trees have faces. They watch. They watch. They watch. The roots are veins, and the mud is flesh...',
+  },
+  {
+    type: 'letter',
+    title: 'Final Words',
+    fullText:
+      'If you are reading this, I have been given to the Parish. The Almanac demands its due. Do not make my mistakes.',
+  },
+];
+---
+
+<section id="testaments" class="content-section">
+  <div class="catalog-drawer">
+    <div class="drawer-face">
+      <div class="drawer-label">
+        <img src="/images/brass-plate.png" alt="Brass label holder" />
+        <span>Testaments A-Z</span>
+      </div>
+    </div>
+
+    <div class="card-track">
+      {
+        testaments.map((item, index) => (
+          <div class:list={['catalog-card', item.type]} data-index={index}>
+            <div class="card-tab">{item.title}</div>
+            <div class="card-body">
+              <p>{item.fullText}</p>
+            </div>
+          </div>
+        ))
+      }
+    </div>
+
+    <button class="drawer-nav prev">
+      <img src="/images/brass-lever.png" alt="Previous" />
+    </button>
+    <button class="drawer-nav next">
+      <img src="/images/brass-lever.png" alt="Next" />
+    </button>
+  </div>
+</section>
+
+<style>
+  /* --- The Archivist's Catalog Drawer --- */
+  .content-section {
+    display: flex;
+    justify-content: center;
+    padding: 4rem 0;
+  }
+
+  .catalog-drawer {
+    width: 90%;
+    max-width: 1000px;
+    height: 500px;
+    background-image: url('/textures/dark-wood.jpg');
+    border: 4px solid #2a201a;
+    box-shadow:
+      0 10px 30px rgba(0, 0, 0, 0.7),
+      inset 0 0 20px rgba(0, 0, 0, 0.8);
+    position: relative;
+    display: flex;
+    align-items: center;
+    padding: 0 4rem; /* Space for nav levers */
+  }
+
+  .drawer-face {
+    /* Decorative front panel */
+  }
+  .drawer-label {
+    position: absolute;
+    bottom: 1rem;
+    left: 1rem;
+  }
+
+  .card-track {
+    position: relative;
+    width: 100%;
+    height: 90%;
+  }
+
+  .catalog-card {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 350px;
+    height: 400px;
+    background-image: url('/textures/index-card.png');
+    background-size: cover;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+    transition:
+      transform 0.6s cubic-bezier(0.25, 1, 0.5, 1),
+      opacity 0.6s;
+    cursor: pointer;
+  }
+
+  .card-tab {
+    position: absolute;
+    top: 0;
+    left: 20px;
+    transform: translateY(-100%);
+    background: inherit;
+    padding: 5px 15px;
+    border-radius: 5px 5px 0 0;
+    font-family: var(--body-font);
+    font-weight: bold;
+    box-shadow: 0 -3px 5px rgba(0, 0, 0, 0.3);
+    transition: transform 0.3s ease;
+  }
+  .catalog-card:hover .card-tab {
+    transform: translateY(-120%);
+  }
+
+  .card-body {
+    padding: 2rem;
+    overflow-y: auto;
+    height: 100%;
+    opacity: 0;
+    transition: opacity 0.5s ease 0.3s;
+    font-family: 'Special Elite', cursive;
+    line-height: 1.7;
+  }
+
+  /* --- Card States --- */
+  .catalog-card.is-active {
+    transform: translate(-50%, -50%) rotate(0deg) !important;
+    z-index: 100;
+    cursor: default;
+  }
+  .catalog-card.is-active .card-body {
+    opacity: 1;
+  }
+
+  /* --- Nav Levers --- */
+  .drawer-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 10px;
+  }
+  .drawer-nav img {
+    width: 30px;
+    transition: transform 0.2s;
+  }
+  .drawer-nav:hover img {
+    transform: scale(1.1);
+  }
+  .drawer-nav.prev {
+    left: 10px;
+  }
+  .drawer-nav.next {
+    right: 10px;
+    transform: translateY(-50%) scaleX(-1);
+  } /* Flip for right side */
+</style>
+
+<script>
+  const cards = document.querySelectorAll<HTMLElement>('.catalog-card');
+  const prevButton = document.querySelector<HTMLButtonElement>('.drawer-nav.prev');
+  const nextButton = document.querySelector<HTMLButtonElement>('.drawer-nav.next');
+  // Sounds
+  const cardSlideSound = new Audio('/sounds/card-slide.mp3');
+  const cardThumpSound = new Audio('/sounds/card-thump.mp3');
+  const leverClickSound = new Audio('/sounds/lever-click.mp3');
+  let activeIndex = 0;
+  function updateCardPositions() {
+    cards.forEach((card, index) => {
+      // Calculate position relative to the active card
+      const offset = index - activeIndex;
+      card.classList.remove('is-active');
+      if (offset === 0) {
+        // This is the active card
+        card.classList.add('is-active');
+        card.style.transform = `translate(-50%, -50%) rotate(0deg)`;
+        card.style.opacity = '1';
+        card.style.pointerEvents = 'auto';
+        card.style.zIndex = '100';
+      } else {
+        // These are the background/stacked cards
+        const translateX = -50 + offset * 10; // How far apart they are stacked
+        const rotate = offset * 2; // The fan-out angle
+        const scale = 1 - Math.abs(offset) * 0.05; // Cards in back are smaller
+        const zIndex = 50 - Math.abs(offset);
+        card.style.transform = `translate(${translateX}%, -50%) scale(${scale}) rotate(${rotate}deg)`;
+        card.style.opacity = '1';
+        card.style.pointerEvents = 'auto'; // Make tabs clickable
+        card.style.zIndex = String(zIndex);
+      }
+    });
+  }
+  function setActiveCard(index: number) {
+    if (index < 0 || index >= cards.length) return;
+    activeIndex = index;
+    updateCardPositions();
+    // Play sound with a slight delay to match animation
+    setTimeout(() => {
+      cardThumpSound.currentTime = 0;
+      cardThumpSound.play();
+    }, 400);
+  }
+  // --- Event Listeners ---
+  cards.forEach((card) => {
+    card.addEventListener('click', () => {
+      const newIndex = parseInt(card.dataset.index || '0', 10);
+      if (newIndex !== activeIndex) {
+        cardSlideSound.currentTime = 0;
+        cardSlideSound.play();
+        setActiveCard(newIndex);
+      }
+    });
+  });
+  if (prevButton) {
+    prevButton.addEventListener('click', () => {
+      leverClickSound.currentTime = 0;
+      leverClickSound.play();
+      cardSlideSound.currentTime = 0;
+      cardSlideSound.play();
+      setActiveCard(activeIndex - 1);
+    });
+  }
+  if (nextButton) {
+    nextButton.addEventListener('click', () => {
+      leverClickSound.currentTime = 0;
+      leverClickSound.play();
+      cardSlideSound.currentTime = 0;
+      cardSlideSound.play();
+      setActiveCard(activeIndex + 1);
+    });
+  }
+  // Initial setup
+  updateCardPositions();
+</script>
