@@ -1,11 +1,13 @@
 ---
 // src/pages/index-almanac.astro
+// src/pages/index-almanac.astro
 import AlmanacLayout from '../layouts/AlmanacLayout.astro';
 import KeyholeIcon from '~/components/KeyholeIcon.astro';
 import SurveyMap from '~/components/SurveyMap.astro';
 import TestamentsDrawer from '../components/TestamentsDrawer.astro';
 import CensusSepulcher from '../components/CensusSepulcher.astro';
 import ScryingBowl from '~/components/widgets/ScryingBowl.astro';
+import FinalInvitation from '~/components/FinalInvitation.astro';
 import '~/assets/styles/almanac-separators.css';
 ---
 
@@ -57,9 +59,7 @@ import '~/assets/styles/almanac-separators.css';
 
   <ScryingBowl />
 
-  <footer class="almanac-footer">
-    <!-- ... final CTA ... -->
-  </footer>
+  <FinalInvitation />
 </AlmanacLayout>
 
 <script>
