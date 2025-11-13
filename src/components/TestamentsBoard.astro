@@ -1,0 +1,221 @@
+---
+// src/components/TestamentsBoard.astro
+import TestamentItem from './TestamentItem.astro';
+
+// This data would come from your content files
+const testaments = [
+  {
+    type: 'diary',
+    title: "An Explorer's Journal",
+    summary: 'Day 3: The air grows thick. I saw something in the water...',
+    fullText:
+      'Day 3: The air grows thick. The compass spins. I saw something in the water, something with too many eyes. It watched me from below the surface. I dare not return to that part of the bayou.',
+    style: 'transform: rotate(-2deg); z-index: 2; top: 0; left: 5%;',
+  },
+  {
+    type: 'letter',
+    title: 'A Sealed Warning',
+    summary: 'A letter sealed with a skull emblem. It feels warm.',
+    fullText:
+      'To my dearest Eleanor, Do not follow me to Salvation. The Parish is not what it seems. The whispers are real. I have hidden the key at the old Blackwood Manor. It is our only hope. Burn this letter. - H.',
+    style: 'transform: rotate(1.5deg); z-index: 3; top: 2rem; left: 40%;',
+  },
+  {
+    type: 'telegram',
+    title: 'Urgent Telegram',
+    summary: 'FADED TELEGRAM STOP PARTY MISSING STOP',
+    fullText:
+      'FADED TELEGRAM STOP PARTY MISSING SINCE TUESDAY STOP LAST SEEN NEAR SUNKEN CHAPEL STOP PRESUMED LOST STOP THE ALMANAC DEMANDS ITS DUE STOP',
+    style: 'transform: rotate(0.5deg); z-index: 1; top: 8rem; left: 10%;',
+  },
+] as const;
+---
+
+<div id="testaments-board">
+  {
+    testaments.map((item) => (
+      <TestamentItem
+        type={item.type}
+        title={item.title}
+        summary={item.summary}
+        fullText={item.fullText}
+        style={item.style}
+      />
+    ))
+  }
+</div>
+
+<div id="focal-point" class="hidden">
+  <div id="focal-content"></div>
+  <button id="close-focal">X</button>
+</div>
+<audio id="paper-lift-sound" src="/sounds/paper-lift.mp3" preload="auto"></audio>
+<audio id="paper-unfold-sound" src="/sounds/paper-unfold.mp3" preload="auto"></audio>
+<audio id="wax-crack-sound" src="/sounds/wax-crack.mp3" preload="auto"></audio>
+
+<style>
+  #testaments-board {
+    position: relative;
+    width: 100%;
+    height: 60vh;
+    background-image: url('/textures/corkboard.jpg');
+    background-size: cover;
+    border: 4px solid #3a2e1e;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.8) inset;
+    transition:
+      filter 0.5s ease,
+      transform 0.5s ease;
+  }
+  .testament-item {
+    position: absolute;
+    padding: 1rem;
+    background-color: #f5e8d0;
+    border: 1px solid #c9b897;
+    box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.5);
+    cursor: pointer;
+    transition:
+      transform 0.2s ease,
+      box-shadow 0.2s ease;
+    font-family: 'Courier New', Courier, monospace;
+    width: 250px;
+  }
+  .testament-item:hover {
+    transform: scale(1.05) rotate(var(--hover-rotate, 0deg));
+    box-shadow: 8px 8px 20px rgba(0, 0, 0, 0.6);
+    z-index: 10 !important;
+  }
+  .testament-pin {
+    position: absolute;
+    top: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 20px;
+    height: 20px;
+    background-image: url('/images/push-pin.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+  }
+  .testament-title {
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+    border-bottom: 1px solid #3a2e1e;
+    padding-bottom: 0.5rem;
+  }
+  .wax-seal {
+    position: absolute;
+    bottom: -15px;
+    right: -15px;
+    width: 40px;
+    height: 40px;
+    background-image: url('/images/wax-seal-intact.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    cursor: pointer;
+  }
+  #focal-point {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(5px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+  }
+  #focal-point:not(.hidden) {
+    opacity: 1;
+  }
+  #focal-content {
+    background-color: #f5e8d0;
+    padding: 2rem;
+    border: 2px solid #3a2e1e;
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+    max-width: 600px;
+    text-align: center;
+    position: relative;
+  }
+  #close-focal {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #3a2e1e;
+  }
+</style>
+
+<script is:inline>
+  document.addEventListener('DOMContentLoaded', () => {
+    const board = document.getElementById('testaments-board');
+    const focalPoint = document.getElementById('focal-point');
+    const focalContent = document.getElementById('focal-content');
+    const closeFocal = document.getElementById('close-focal');
+    const items = document.querySelectorAll('.testament-item');
+    const paperLiftSound = document.getElementById('paper-lift-sound');
+    const paperUnfoldSound = document.getElementById('paper-unfold-sound');
+    const waxCrackSound = document.getElementById('wax-crack-sound');
+
+    if (board && focalPoint && focalContent && closeFocal) {
+      items.forEach((item) => {
+        item.addEventListener('mouseenter', () => {
+          if (paperLiftSound instanceof HTMLAudioElement) {
+            paperLiftSound.currentTime = 0;
+            paperLiftSound.play();
+          }
+        });
+
+        item.addEventListener('click', () => {
+          const type = item.getAttribute('data-type');
+          const title = item.getAttribute('data-title');
+          const fullText = item.getAttribute('data-full-text');
+
+          board.style.filter = 'blur(5px) brightness(0.5)';
+          board.style.transform = 'scale(0.95)';
+          focalPoint.classList.remove('hidden');
+
+          let contentHTML = `<h3>${title}</h3><p>${fullText}</p>`;
+          if (type === 'letter') {
+            contentHTML += `<div id="focal-seal" class="wax-seal" style="background-image: url('/images/wax-seal-intact.png'); cursor: pointer; position: relative; margin: 1rem auto 0; width: 50px; height: 50px;"></div>`;
+          }
+
+          focalContent.innerHTML = contentHTML;
+
+          if (type === 'letter') {
+            const focalSeal = document.getElementById('focal-seal');
+            if (focalSeal) {
+              focalSeal.addEventListener(
+                'click',
+                () => {
+                  if (waxCrackSound instanceof HTMLAudioElement) {
+                    waxCrackSound.currentTime = 0;
+                    waxCrackSound.play();
+                  }
+                  focalSeal.style.backgroundImage = `url('/images/wax-seal-broken.png')`;
+                  // In a real implementation, you might reveal more text here.
+                },
+                { once: true }
+              );
+            }
+          }
+          if (paperUnfoldSound instanceof HTMLAudioElement) {
+            paperUnfoldSound.currentTime = 0;
+            paperUnfoldSound.play();
+          }
+        });
+      });
+
+      closeFocal.addEventListener('click', () => {
+        board.style.filter = 'none';
+        board.style.transform = 'none';
+        focalPoint.classList.add('hidden');
+      });
+    }
+  });
+</script>

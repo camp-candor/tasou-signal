@@ -1,0 +1,27 @@
+---
+// src/components/TestamentItem.astro
+export interface Props {
+  type: 'diary' | 'letter' | 'telegram';
+  title: string;
+  summary: string;
+  fullText: string;
+  style: string;
+}
+const { type, title, summary, fullText, style } = Astro.props;
+---
+
+<div
+  class:list={['testament-item', type]}
+  style={style}
+  data-type={type}
+  data-title={title}
+  data-summary={summary}
+  data-full-text={fullText}
+>
+  <div class="testament-pin"></div>
+  <div class="testament-content">
+    <h3 class="testament-title">{title}</h3>
+    <p class="testament-summary">{summary}</p>
+    {type === 'letter' && <div class="wax-seal" />}
+  </div>
+</div>
