@@ -1,0 +1,196 @@
+---
+// src/components/widgets/ScryingBowl.astro
+---
+
+<section id="whispers" class="content-section">
+  <div id="scrying-bowl-container">
+    <div class="bowl-image-wrapper">
+      <img src="/images/stone-bowl.png" alt="A dark stone scrying bowl." />
+    </div>
+    <div class="water-surface">
+      <div class="ghostly-face"></div>
+    </div>
+    <div class="rumor-text-display"></div>
+    <!-- NEW: A duplicate element for the false rumor jitter effect -->
+    <div class="rumor-text-display distorted-double"></div>
+  </div>
+</section>
+
+<style>
+  /* --- Add these new styles to your existing CSS --- */
+
+  /* --- State-Specific Face Styling --- */
+  .ghostly-face[data-status='verified'] {
+    background-image: url('/images/ghostly-face-serene.png');
+  }
+  .ghostly-face[data-status='false'] {
+    background-image: url('/images/ghostly-face-distorted.png');
+    /* Add a slight twitch animation for the false face */
+    animation: face-twitch 0.2s infinite;
+  }
+  @keyframes face-twitch {
+    0%,
+    100% {
+      transform: scale(1) translate(0, 0);
+    }
+    50% {
+      transform: scale(1.02) translate(2px, -2px);
+    }
+  }
+
+  /* --- State-Specific Text Styling --- */
+  .rumor-text-display[data-status='verified'] {
+    color: #ffd700; /* Golden color */
+    text-shadow:
+      0 0 10px #ffd700,
+      0 0 20px #ffa500;
+  }
+
+  .rumor-text-display[data-status='false'] {
+    color: #ff4d4d; /* Corrupted red */
+    text-shadow: 0 0 10px #ff0000;
+    animation: text-jitter 0.1s infinite;
+  }
+
+  /* The distorted double for the false rumor effect */
+  .distorted-double {
+    color: #4dffff; /* Cyan glitch color */
+    mix-blend-mode: screen; /* Creates a cool glitchy blend */
+    z-index: 1; /* Make sure it's behind the main text */
+  }
+
+  @keyframes text-jitter {
+    0%,
+    100% {
+      transform: translate(-50%, -50%) skewX(0deg);
+    }
+    25% {
+      transform: translate(-52%, -48%) skewX(5deg);
+    }
+    50% {
+      transform: translate(-48%, -52%) skewX(-5deg);
+    }
+    75% {
+      transform: translate(-51%, -49%) skewX(2deg);
+    }
+  }
+</style>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const bowlContainer = document.getElementById('scrying-bowl-container');
+    if (!bowlContainer) return;
+
+    const ghostlyFace = bowlContainer.querySelector('.ghostly-face') as HTMLElement;
+    const rumorTextDisplay = bowlContainer.querySelector('.rumor-text-display') as HTMLElement;
+    const distortedDouble = bowlContainer.querySelector('.distorted-double') as HTMLElement;
+
+    if (!ghostlyFace || !rumorTextDisplay || !distortedDouble) return;
+
+    const whispers = [
+      {
+        status: 'unverified',
+        text: 'They say the old bell at the sunken chapel tolls...',
+        audioSrc: '/sounds/clear-whisper-1.mp3',
+      },
+      {
+        status: 'verified',
+        text: "The bridge near Miller's Crossing is out...",
+        audioSrc: '/sounds/clear-whisper-2.mp3',
+      },
+      { status: 'false', text: "Old Man Hemlock's treasure was a lie...", audioSrc: '/sounds/clear-whisper-3.mp3' },
+    ];
+
+    let whisperIndex = 0;
+    let isScrying = false;
+
+    // --- Audio Setup ---
+    const ambience = new Audio('/sounds/bowl-ambience.mp3');
+    ambience.loop = true;
+    ambience.volume = 0;
+    const waterDripSound = new Audio('/sounds/water-drip.mp3');
+    const verifiedChime = new Audio('/sounds/verified-chime.mp3');
+    const falseStatic = new Audio('/sounds/false-static.mp3');
+
+    const clearWhispers = whispers.map((w) => new Audio(w.audioSrc));
+
+    // --- Interaction Logic ---
+    bowlContainer.addEventListener('click', () => {
+      if (isScrying) return;
+      isScrying = true;
+
+      // Reset all state-specific classes and styles from previous clicks
+      ghostlyFace.dataset.status = '';
+      rumorTextDisplay.dataset.status = '';
+      distortedDouble.textContent = '';
+
+      // 1. Dip wisp into water
+      waterDripSound.currentTime = 0;
+      waterDripSound.play();
+
+      // Get the current whisper and its status
+      const currentWhisper = whispers[whisperIndex];
+
+      // 2. Face materializes - SET THE STATUS on the element
+      ghostlyFace.dataset.status = currentWhisper.status;
+      ghostlyFace.classList.add('is-visible');
+
+      setTimeout(() => {
+        // 3. Eyes open, audio plays, text appears
+        if (currentWhisper.status !== 'unverified') {
+          ghostlyFace.style.backgroundImage = `url('/images/ghostly-face-${currentWhisper.status}.png')`;
+        } else {
+          ghostlyFace.style.backgroundImage = `url('/images/ghostly-face-open.png')`;
+        }
+
+        rumorTextDisplay.textContent = currentWhisper.text;
+        rumorTextDisplay.dataset.status = currentWhisper.status;
+        rumorTextDisplay.classList.add('is-visible');
+
+        const whisperAudio = clearWhispers[whisperIndex];
+        whisperAudio.currentTime = 0;
+
+        // Play state-specific sounds
+        if (currentWhisper.status === 'verified') {
+          verifiedChime.play();
+          whisperAudio.volume = 1.0;
+        } else if (currentWhisper.status === 'false') {
+          falseStatic.play();
+          whisperAudio.volume = 0.5; // Muffle it under the static
+          // Activate the distorted double text
+          distortedDouble.textContent = currentWhisper.text;
+          distortedDouble.dataset.status = 'false';
+          distortedDouble.classList.add('is-visible');
+        } else {
+          whisperAudio.volume = 1.0;
+        }
+        whisperAudio.play();
+
+        whisperIndex = (whisperIndex + 1) % whispers.length;
+
+        // 4. Listen for the whisper to end
+        whisperAudio.onended = () => {
+          // 5. Fade out and reset
+          ghostlyFace.classList.remove('is-visible');
+          rumorTextDisplay.classList.remove('is-visible');
+          distortedDouble.classList.remove('is-visible');
+          falseStatic.pause();
+          falseStatic.currentTime = 0;
+
+          setTimeout(() => {
+            ghostlyFace.style.backgroundImage = "url('/images/ghostly-face.png')"; // Reset face
+            isScrying = false; // Allow another click
+          }, 1000);
+        };
+      }, 1000);
+    });
+
+    // (The existing mouseenter/mouseleave/ambience logic remains the same)
+    bowlContainer.addEventListener('mouseenter', () => {
+      if (ambience.paused) ambience.play().catch((_e) => {});
+      ambience.animate({ volume: 0.6 }, { duration: 1000, fill: 'forwards' });
+    });
+    bowlContainer.addEventListener('mouseleave', () => {
+      ambience.animate({ volume: 0.2 }, { duration: 1000, fill: 'forwards' });
+    });
+  });
+</script>
