@@ -1,0 +1,145 @@
+---
+// src/components/FinalInvitation.astro
+import KeyholeIcon from './KeyholeIcon.astro';
+---
+
+<footer id="final-invitation" class="content-section">
+  <div class="invitation-wrapper">
+    <p id="challenge-text" class="is-ghostly">Will you offer your testimony?</p>
+    <div id="final-cta-container">
+      <button id="signInButton" class="auth-link">
+        <KeyholeIcon />
+        <span>Inscribe Your Name</span>
+      </button>
+    </div>
+  </div>
+</footer>
+<style>
+  #final-invitation {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 80vh; /* Takes up a significant portion of the screen */
+    background: #0a0a0a;
+    text-align: center;
+  }
+  .invitation-wrapper {
+    cursor: pointer;
+  }
+  #challenge-text {
+    font-family: 'IM Fell English', serif;
+    font-style: italic;
+    font-size: 2rem;
+    transition: all 0.3s cubic-bezier(0.19, 1, 0.22, 1);
+  }
+  /* The initial, ghostly state of the text */
+  .is-ghostly {
+    color: rgba(224, 240, 255, 0.4);
+    filter: blur(2px);
+    text-shadow: 0 0 15px rgba(224, 240, 255, 0.5);
+    animation: drift 15s infinite linear alternate;
+  }
+  .is-ghostly:hover {
+    color: rgba(224, 240, 255, 0.8);
+    filter: blur(1px);
+    animation-play-state: paused;
+  }
+  /* The final, solidified state of the text */
+  .is-solidified {
+    color: var(--ink-color); /* The Almanac's dark ink color */
+    filter: blur(0);
+    text-shadow: 1px 1px 0px rgba(255, 255, 255, 0.1);
+    animation: flash-solidify 0.5s ease-out;
+  }
+  #final-cta-container {
+    margin-top: 2rem;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 1s ease 0.5s;
+  }
+  #final-cta-container.is-visible {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .auth-link {
+    /* (Copy styles from your nav auth-link) */
+  }
+  /* Animations */
+  @keyframes drift {
+    from {
+      transform: translate(-5px, -2px);
+    }
+    to {
+      transform: translate(5px, 2px);
+    }
+  }
+  @keyframes flash-solidify {
+    0% {
+      color: white;
+      text-shadow: 0 0 30px white;
+      filter: blur(0);
+    }
+    50% {
+      color: white;
+      text-shadow: 0 0 30px white;
+      filter: blur(0);
+    }
+    100% {
+      color: var(--ink-color);
+      text-shadow: 1px 1px 0px rgba(255, 255, 255, 0.1);
+      filter: blur(0);
+    }
+  }
+</style>
+<script>
+  const wrapper = document.querySelector<HTMLElement>('.invitation-wrapper');
+  const challengeText = document.getElementById('challenge-text');
+  const ctaContainer = document.getElementById('final-cta-container');
+  const signInButton = document.getElementById('signInButton');
+
+  if (wrapper && challengeText && ctaContainer && signInButton) {
+    const humSound = new Audio('/sounds/epigraph-hum.mp3');
+    humSound.loop = true;
+    const thumpSound = new Audio('/sounds/final-thump.mp3');
+    const chimeSound = new Audio('/sounds/final-chime.mp3');
+    let hasCommitted = false;
+
+    wrapper.addEventListener('mouseenter', () => {
+      if (!hasCommitted) {
+        humSound.currentTime = 0;
+        humSound.play().catch((_e) => {});
+        humSound.animate({ volume: 0.4 }, { duration: 500 });
+      }
+    });
+
+    wrapper.addEventListener('mouseleave', () => {
+      humSound.animate({ volume: 0 }, { duration: 500 }).onfinish = () => humSound.pause();
+    });
+
+    wrapper.addEventListener('click', () => {
+      if (hasCommitted) return;
+      hasCommitted = true;
+
+      wrapper.style.cursor = 'default';
+      humSound.pause();
+      thumpSound.play();
+
+      challengeText.classList.remove('is-ghostly');
+      challengeText.classList.add('is-solidified');
+
+      setTimeout(() => {
+        chimeSound.play();
+        ctaContainer.classList.add('is-visible');
+      }, 500);
+    });
+
+    // The Clerk integration was removed as it was causing build issues.
+    // The original code was:
+    // import { useClerk } from 'astro-clerk-auth/client';
+    // const clerk = useClerk();
+    // signInButton.addEventListener('click', (e) => {
+    //     e.stopPropagation();
+    //     clerk.openSignIn({});
+    // });
+  }
+</script>
