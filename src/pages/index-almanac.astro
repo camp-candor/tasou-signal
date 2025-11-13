@@ -3,7 +3,7 @@
 import AlmanacLayout from '../layouts/AlmanacLayout.astro';
 import KeyholeIcon from '~/components/KeyholeIcon.astro';
 import SurveyMap from '~/components/SurveyMap.astro';
-import TestamentPlaceholder from '../components/widgets/TestamentPlaceholder.astro';
+import TestamentsDrawer from '../components/TestamentsDrawer.astro';
 import CensusPlaceholder from '../components/widgets/CensusPlaceholder.astro';
 import '~/assets/styles/almanac-separators.css';
 ---
@@ -42,15 +42,7 @@ import '~/assets/styles/almanac-separators.css';
     <p class="epigraph-text">...and so the Parish keeps its own accounts.</p>
   </div>
 
-  <section id="testaments" class="scroll-section">
-    <div class="testaments-grid">
-      <TestamentPlaceholder />
-      <TestamentPlaceholder />
-      <TestamentPlaceholder />
-      <TestamentPlaceholder />
-      <TestamentPlaceholder />
-    </div>
-  </section>
+  <TestamentsDrawer />
 
   <!-- Stitched Seam Separator -->
   <div class="stitched-seam"></div>
