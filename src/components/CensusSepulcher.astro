@@ -27,7 +27,9 @@ const characters = [
 ---
 
 <section id="census" class="content-section">
+  <h2 class="sepulcher-heading">The Census of the Lost</h2>
   <div class="sepulcher-wall">
+    <div class="scroll-fader left"></div>
     <div class="sepulcher-corridor">
       {
         characters.map((char) => (
@@ -61,33 +63,75 @@ const characters = [
         ))
       }
     </div>
+    <div class="scroll-fader right"></div>
   </div>
 </section>
 
 <style>
-  /* --- The Census - Sepulcher of Whispers --- */
   .content-section {
     padding: 4rem 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .sepulcher-heading {
+    font-family: 'UnifrakturMaguntia', cursive;
+    font-size: 2.5rem;
+    color: #4a3f35;
+    text-align: center;
+    margin-bottom: 2rem;
+    text-shadow:
+      1px 1px 0px rgba(255, 255, 255, 0.1),
+      -1px -1px 0px rgba(0, 0, 0, 0.5);
   }
 
   .sepulcher-wall {
+    position: relative;
     width: 100%;
     padding: 2rem 0;
     background-image: url('/textures/wet-stone-wall.jpg');
     box-shadow: inset 0 0 50px #000;
-    overflow-x: auto; /* Enable horizontal scrolling */
-    -webkit-overflow-scrolling: touch; /* Smooth scrolling on mobile */
+    overflow: hidden;
   }
 
   .sepulcher-corridor {
     display: flex;
-    width: max-content; /* Allow the corridor to be wider than the screen */
+    width: max-content;
     padding: 0 5vw;
+    transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  .scroll-fader {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 15%;
+    max-width: 200px;
+    z-index: 10;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.5s;
+  }
+
+  .scroll-fader.left {
+    left: 0;
+    background: linear-gradient(to right, rgba(0, 0, 0, 0.8) 0%, transparent 100%);
+  }
+
+  .scroll-fader.right {
+    right: 0;
+    background: linear-gradient(to left, rgba(0, 0, 0, 0.8) 0%, transparent 100%);
+  }
+
+  .scroll-fader.is-active {
+    pointer-events: auto;
+    opacity: 1;
   }
 
   .sepulcher-niche {
     position: relative;
-    flex: 0 0 250px; /* Each niche has a fixed width */
+    flex: 0 0 250px;
     height: 400px;
     margin: 0 1.5rem;
     background-image: url('/images/stone-niche.png');
@@ -97,8 +141,6 @@ const characters = [
     align-items: center;
     justify-content: center;
     cursor: pointer;
-
-    /* The wisp's dynamic light effect */
     background-image:
       radial-gradient(
         circle 200px at var(--wisp-x, -999px) var(--wisp-y, -999px),
@@ -111,10 +153,12 @@ const characters = [
   .death-mask-container {
     position: relative;
   }
+
   .death-mask {
     width: 150px;
     filter: drop-shadow(0 4px 10px #000);
   }
+
   .mask-glow {
     position: absolute;
     inset: 0;
@@ -122,6 +166,7 @@ const characters = [
     opacity: 0;
     transition: opacity 0.5s;
   }
+
   .sepulcher-niche.is-active .mask-glow {
     opacity: 0.1;
     animation: pulse 3s infinite;
@@ -131,6 +176,7 @@ const characters = [
     position: relative;
     margin-top: 1rem;
   }
+
   .ember-glow {
     position: absolute;
     top: -5px;
@@ -144,6 +190,7 @@ const characters = [
     opacity: 0;
     transition: opacity 0.3s;
   }
+
   .sepulcher-niche:hover .ember-glow {
     opacity: 1;
   }
@@ -152,14 +199,17 @@ const characters = [
     margin-top: 1rem;
     text-align: center;
   }
+
   .character-name {
     font-family: 'Special Elite', monospace;
     color: #a09080;
     transition: opacity 0.3s;
   }
+
   .sepulcher-niche:hover .character-name {
     opacity: 0;
   }
+
   .epitaph-text {
     position: absolute;
     bottom: 0;
@@ -169,103 +219,141 @@ const characters = [
     font-style: italic;
     color: #fff;
     opacity: 0;
-    transition: opacity 0.5s 0.3s; /* Delayed fade-in */
+    transition: opacity 0.5s 0.3s;
     text-shadow: 0 0 10px #fff;
   }
+
   .sepulcher-niche.is-active .epitaph-text {
     opacity: 1;
   }
 </style>
 <script>
-  const wall = document.querySelector('.sepulcher-wall');
+  const wall = document.querySelector('.sepulcher-wall') as HTMLElement | null;
+  const corridor = document.querySelector('.sepulcher-corridor') as HTMLElement | null;
   const niches = document.querySelectorAll('.sepulcher-niche');
+  const faderLeft = document.querySelector('.scroll-fader.left') as HTMLElement | null;
+  const faderRight = document.querySelector('.scroll-fader.right') as HTMLElement | null;
 
   const ambience = new Audio('/sounds/sepulcher-ambience.mp3');
   ambience.loop = true;
   ambience.volume = 0;
-
   const emberSound = new Audio('/sounds/ember-glow.mp3');
   const activateSound = new Audio('/sounds/mask-activate.mp3');
-  let activeWhisper: HTMLAudioElement | null = null;
+
   let hasInteracted = false;
+  let activeWhisper: HTMLAudioElement | null = null;
+  let scrollInterval: ReturnType<typeof setInterval> | null = null;
 
-  // --- Wisp Lighting Effect ---
-  if (wall) {
-    wall.addEventListener('mousemove', (e: MouseEvent) => {
-      niches.forEach((niche) => {
-        const nicheRect = niche.getBoundingClientRect();
-        const nicheX = e.clientX - nicheRect.left;
-        const nicheY = e.clientY - nicheRect.top;
-        (niche as HTMLElement).style.setProperty('--wisp-x', `${nicheX}px`);
-        (niche as HTMLElement).style.setProperty('--wisp-y', `${nicheY}px`);
-      });
-    });
-  }
-
-  // --- Audio and Interaction Logic ---
   function startAmbience() {
-    if (!hasInteracted) {
+    if (!hasInteracted && ambience) {
       ambience.play();
       ambience.animate({ volume: 0.3 }, { duration: 2000, fill: 'forwards' });
       hasInteracted = true;
     }
   }
 
-  niches.forEach((niche) => {
-    niche.addEventListener('mouseenter', () => {
-      startAmbience();
-      if ((niche as HTMLElement).dataset.status !== 'sheltered') {
-        emberSound.currentTime = 0;
-        emberSound.volume = 0.5;
-        emberSound.play();
-      }
-    });
-
-    niche.addEventListener('click', () => {
-      // If this one is already active, do nothing.
-      if (niche.classList.contains('is-active')) return;
-
-      // Deactivate all others
-      niches.forEach((n) => n.classList.remove('is-active'));
-      if (activeWhisper) {
-        activeWhisper.pause();
-      }
-
-      // Activate this one
-      niche.classList.add('is-active');
-      activateSound.currentTime = 0;
-      activateSound.play();
-
-      const audioSrc = (niche as HTMLElement).dataset.audio;
-      if (audioSrc) {
-        activeWhisper = new Audio(audioSrc);
-        activeWhisper.volume = 0.8;
-        activeWhisper.play();
-      }
-
-      const epitaphEl = niche.querySelector('.epitaph-text');
-      if (epitaphEl) {
-        epitaphEl.textContent = (niche as HTMLElement).dataset.epitaph || '';
-      }
-
-      // Set a timeout to clear the active state
-      setTimeout(() => {
-        niche.classList.remove('is-active');
-        if (epitaphEl) {
-          epitaphEl.textContent = '';
-        }
-      }, 5000); // Display for 5 seconds
-    });
-  });
-
-  // Start ambience on first scroll into view
-  if (wall) {
-    const observer = new IntersectionObserver((entries) => {
-      if (entries[0].isIntersecting) {
-        wall.addEventListener('click', startAmbience, { once: true });
-        observer.disconnect();
-      }
-    });
-    observer.observe(wall);
+  function checkScrollState() {
+    if (corridor && wall && faderLeft && faderRight) {
+      const isScrollable = corridor.scrollWidth > wall.clientWidth;
+      if (!isScrollable) return;
+      faderLeft.classList.toggle('is-active', corridor.scrollLeft > 0);
+      faderRight.classList.toggle('is-active', corridor.scrollLeft < corridor.scrollWidth - wall.clientWidth - 1);
+    }
   }
+
+  function initializeSepulcher() {
+    if (wall) {
+      wall.addEventListener('mousemove', (e: MouseEvent) => {
+        niches.forEach((niche) => {
+          const nicheEl = niche as HTMLElement;
+          const nicheRect = nicheEl.getBoundingClientRect();
+          nicheEl.style.setProperty('--wisp-x', `${e.clientX - nicheRect.left}px`);
+          nicheEl.style.setProperty('--wisp-y', `${e.clientY - nicheRect.top}px`);
+        });
+      });
+    }
+
+    niches.forEach((niche) => {
+      const nicheEl = niche as HTMLElement;
+      nicheEl.addEventListener('mouseenter', () => {
+        startAmbience();
+        if (nicheEl.dataset.status !== 'sheltered') {
+          emberSound.currentTime = 0;
+          emberSound.volume = 0.5;
+          emberSound.play();
+        }
+      });
+      nicheEl.addEventListener('click', () => {
+        if (nicheEl.classList.contains('is-active')) return;
+        niches.forEach((n) => n.classList.remove('is-active'));
+        if (activeWhisper) {
+          activeWhisper.pause();
+        }
+        nicheEl.classList.add('is-active');
+        activateSound.currentTime = 0;
+        activateSound.play();
+        const audioSrc = nicheEl.dataset.audio;
+        if (audioSrc) {
+          activeWhisper = new Audio(audioSrc);
+          if (activeWhisper) {
+            activeWhisper.volume = 0.8;
+            activeWhisper.play();
+          }
+        }
+        const epitaphEl = nicheEl.querySelector('.epitaph-text');
+        if (epitaphEl) {
+          epitaphEl.textContent = nicheEl.dataset.epitaph || '';
+        }
+        setTimeout(() => {
+          nicheEl.classList.remove('is-active');
+          if (epitaphEl) {
+            epitaphEl.textContent = '';
+          }
+        }, 5000);
+      });
+    });
+
+    const startScrolling = (direction: number) => {
+      if (scrollInterval) return;
+      scrollInterval = setInterval(() => {
+        const scrollAmount = direction * 5;
+        if (corridor) {
+          corridor.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+        }
+      }, 16);
+    };
+
+    const stopScrolling = () => {
+      if (scrollInterval) {
+        clearInterval(scrollInterval);
+        scrollInterval = null;
+      }
+    };
+
+    if (faderLeft && faderRight) {
+      faderLeft.addEventListener('mouseenter', () => startScrolling(-1));
+      faderLeft.addEventListener('mouseleave', stopScrolling);
+      faderRight.addEventListener('mouseenter', () => startScrolling(1));
+      faderRight.addEventListener('mouseleave', stopScrolling);
+    }
+
+    if (corridor) {
+      corridor.addEventListener('scroll', checkScrollState);
+    }
+    window.addEventListener('resize', checkScrollState);
+
+    checkScrollState();
+
+    if (wall) {
+      const observer = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting) {
+          wall.addEventListener('click', startAmbience, { once: true });
+          observer.disconnect();
+        }
+      });
+      observer.observe(wall);
+    }
+  }
+
+  initializeSepulcher();
 </script>
